@@ -1,23 +1,24 @@
-"""Tests for memory substrate: viewpoint-as-memory + AbstractMemory lineage."""
+"""Tests for memory foundation: viewpoint-as-memory + admit."""
 
 from __future__ import annotations
 
 import unittest
 
 from memory import (
-    AbstractMemory,
     AdmittedMemory,
     abstract_memory,
     admit_memory,
     apply_viewpoint,
     bootstrap_viewpoint,
-    core_info,
     is_stale,
     reabstract,
+    reflect_forget,
+    reflect_merge,
     root_of,
     same_source,
     viewpoint_matches,
     walk_origin,
+    walk_origins,
 )
 
 
@@ -69,6 +70,7 @@ class TestMemorySubstrate(unittest.TestCase):
         self.assertIsNotNone(root)
         assert root is not None
         self.assertIsNone(root.origin)
+        self.assertTrue(root.is_view_root)
         self.assertEqual(root.timestamp, 1000.0)
         self.assertEqual(root.index, 10)
         self.assertEqual(root.tags, frozenset({"v1"}))
@@ -96,7 +98,6 @@ class TestMemorySubstrate(unittest.TestCase):
         )
 
         def declare(info, tags, viewpoint):
-            # allow only matching prior token
             if viewpoint.mark.token != b"vp-a":
                 return None
 
@@ -129,13 +130,9 @@ class TestMemorySubstrate(unittest.TestCase):
         vp2 = bootstrap_viewpoint(
             fn=_viewpoint_fn_factory(2, frozenset({"b"}), 20.0),
             token=b"t1",
-            digest=b"d2",  # same token family, new digest = re-abstract
+            digest=b"d2",
             index=0,
         )
-        a1 = admit_memory(data, vp1, _always_ok, _annotator, 0, _index_ok)
-        a2 = admit_memory(data, vp2, _always_ok, _annotator, 0, _index_ok)
-        assert a1 is not None and a2 is not None
-        # Same payload object if caller reuses it
         a1 = AdmittedMemory(data, vp1, 0, _annotator, _index_ok)
         a2 = AdmittedMemory(data, vp2, 0, _annotator, _index_ok)
         r1 = apply_viewpoint(a1)
@@ -175,15 +172,9 @@ class TestMemorySubstrate(unittest.TestCase):
             digest=b"d",
             index=0,
         )
-        self.assertIsNone(
-            admit_memory("", vp, _always_ok, _annotator, 0, _index_ok)
-        )
-        self.assertIsNone(
-            admit_memory([], vp, _always_ok, _annotator, 0, _index_ok)
-        )
-        self.assertIsNone(
-            admit_memory(None, vp, _always_ok, _annotator, 0, _index_ok)
-        )
+        self.assertIsNone(admit_memory("", vp, _always_ok, _annotator, 0, _index_ok))
+        self.assertIsNone(admit_memory([], vp, _always_ok, _annotator, 0, _index_ok))
+        self.assertIsNone(admit_memory(None, vp, _always_ok, _annotator, 0, _index_ok))
 
     def test_declare_refuse(self) -> None:
         vp = bootstrap_viewpoint(
@@ -224,22 +215,6 @@ class TestMemorySubstrate(unittest.TestCase):
         self.assertIsNone(b1.origin)
         self.assertIsNone(b2.origin)
 
-    def test_core_info(self) -> None:
-        vp = bootstrap_viewpoint(
-            fn=_viewpoint_fn_factory(7, frozenset({"t"}), 9.0),
-            token=b"tok",
-            digest=b"dig",
-            index=0,
-        )
-        admitted = admit_memory("z", vp, _always_ok, _annotator, 0, _index_ok)
-        assert admitted is not None
-        root = apply_viewpoint(admitted)
-        assert root is not None
-        info = core_info(root)
-        self.assertEqual(info.viewpoint_token, b"tok")
-        self.assertEqual(info.viewpoint_digest, b"dig")
-        self.assertEqual(info.index, 7)
-
     def test_same_source_helper(self) -> None:
         vp = bootstrap_viewpoint(
             fn=_viewpoint_fn_factory(1, frozenset(), 1.0),
@@ -265,6 +240,70 @@ class TestMemorySubstrate(unittest.TestCase):
         child = abstract_memory(root, declare, index=3)
         assert child is not None
         self.assertTrue(same_source(root, child))
+
+    def test_reflect_merge_m1(self) -> None:
+        vp = bootstrap_viewpoint(
+            fn=_viewpoint_fn_factory(1, frozenset({"a"}), 1.0),
+            token=b"t",
+            digest=b"d",
+            index=0,
+        )
+        a1 = admit_memory("one", vp, _always_ok, _annotator, 10, _index_ok)
+        a2 = admit_memory("two", vp, _always_ok, _annotator, 20, _index_ok)
+        assert a1 is not None and a2 is not None
+        r1 = apply_viewpoint(a1)
+        r2 = apply_viewpoint(a2)
+        assert r1 is not None and r2 is not None
+        merged = reflect_merge((r1, r2), index=99, viewpoint=vp, tags=frozenset({"m"}))
+        self.assertIsNotNone(merged)
+        assert merged is not None
+        self.assertEqual(merged.op, "merge")
+        self.assertIsNone(merged.origin)
+        self.assertEqual(len(merged.origins), 2)
+        self.assertEqual(set(merged.data_indexes), {10, 20})
+        walked = list(walk_origins(merged))
+        self.assertGreaterEqual(len(walked), 3)
+
+    def test_reflect_forget_tombstone(self) -> None:
+        vp = bootstrap_viewpoint(
+            fn=_viewpoint_fn_factory(1, frozenset(), 1.0),
+            token=b"t",
+            digest=b"d",
+            index=0,
+        )
+        admitted = admit_memory("x", vp, _always_ok, _annotator, 1, _index_ok)
+        assert admitted is not None
+        root = apply_viewpoint(admitted)
+        assert root is not None
+        tomb = reflect_forget(root, index=50, viewpoint=vp)
+        assert tomb is not None
+        self.assertEqual(tomb.op, "forget")
+        self.assertIs(tomb.origin, root)
+        self.assertIs(tomb.source.data, admitted.data)
+
+    def test_introduction_fields_on_admit(self) -> None:
+        vp = bootstrap_viewpoint(
+            fn=_viewpoint_fn_factory(1, frozenset(), 1.0),
+            token=b"t",
+            digest=b"d",
+            index=0,
+        )
+        admitted = admit_memory(
+            "z",
+            vp,
+            _always_ok,
+            _annotator,
+            5,
+            _index_ok,
+            sandbox_id="sb",
+            introduced_by=3,
+            introduced_via="import",
+        )
+        assert admitted is not None
+        self.assertEqual(admitted.sandbox_id, "sb")
+        self.assertEqual(admitted.introduced_by, 3)
+        self.assertEqual(admitted.introduced_via, "import")
+        self.assertEqual(admitted.data_index, 5)
 
 
 if __name__ == "__main__":
