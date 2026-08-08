@@ -1,109 +1,37 @@
 """
-memory package — first-class memory kinds for the multi-agent substrate.
+memory package — first-class memory records (data layer only).
 
-Layout convention (keep forever)
---------------------------------
-1. **One memory kind → one module** under this package.
-2. **Core data type(s) + functions for that kind live in the same file.**
-3. **Viewpoint is special:** it is required for original admission, so
-   `ViewpointMemory` lives with Original in `original.py` (not a separate
-   orphan module, not under abstract/reflect).
-4. Shared scalars / FunctionMark only → `common.py` (not a memory kind).
-5. Runtime registry → `pool.py` (not a memory kind).
+Layout convention
+-----------------
+1. **One memory kind → one file** under this package.
+2. That file holds **data only**: immutable records, **no methods**, no ops.
+3. Construction, Pool, Agent, Viewpoint code-mem, and act/search live in
+   **other modules** (not co-located as “struct + methods”).
+4. Shared aliases only → ``common.py`` (not a memory kind).
 
-Modules
--------
-- common.py    shared aliases, FunctionMark
-- original.py  ViewpointMemory + AdmittedMemory + admit / bootstrap
-- abstract.py  AbstractMemory + view / lift / reabstract
-- reflect.py   ReflectMemory + merge / forget
-- pool.py      MemoryPool
-
-External contracts for callables remain in top-level `func.py`.
+Kinds
+-----
+- admitted.py      AdmittedMemory   (legal payload, str MVP)
+- node.py          NodeMemory       (git-style pointer to admitted)
+- observation.py   ObservationMemory (agent×viewpoint cognition metadata)
 """
 
-from memory.abstract import (
-    AbstractCoreInfo,
-    AbstractMemory,
-    AbstractionDeclarator,
-    abstract_memory,
-    apply_viewpoint,
-    branch_root,
-    core_info,
-    is_stale,
-    reabstract,
-    root_of,
-    same_source,
-    walk_origin,
-)
+from memory.admitted import AdmittedMemory
 from memory.common import (
-    Annotator,
-    DataValidator,
-    FunctionMark,
-    FunctionToken,
-    ImmutableAnnotation,
-    ImmutableData,
     ImmutableIndex,
-    IndexValidator,
     MemoryTags,
     NumericTimestamp,
     SandboxId,
 )
-from memory.original import (
-    AdmittedMemory,
-    ViewpointFn,
-    ViewpointMemory,
-    admit_memory,
-    bootstrap_viewpoint,
-    viewpoint_matches,
-)
-from memory.pool import AgentRecord, MemoryPool, OpEvent
-from memory.reflect import (
-    ReflectMemory,
-    ReflectOp,
-    StructuralNode,
-    reflect_forget,
-    reflect_merge,
-    walk_origins,
-)
+from memory.node import NodeMemory
+from memory.observation import ObservationMemory
 
 __all__ = [
-    "AbstractCoreInfo",
-    "AbstractMemory",
-    "AbstractionDeclarator",
     "AdmittedMemory",
-    "AgentRecord",
-    "Annotator",
-    "DataValidator",
-    "FunctionMark",
-    "FunctionToken",
-    "ImmutableAnnotation",
-    "ImmutableData",
     "ImmutableIndex",
-    "IndexValidator",
-    "MemoryPool",
     "MemoryTags",
+    "NodeMemory",
     "NumericTimestamp",
-    "OpEvent",
-    "ReflectMemory",
-    "ReflectOp",
+    "ObservationMemory",
     "SandboxId",
-    "StructuralNode",
-    "ViewpointFn",
-    "ViewpointMemory",
-    "abstract_memory",
-    "admit_memory",
-    "apply_viewpoint",
-    "bootstrap_viewpoint",
-    "branch_root",
-    "core_info",
-    "is_stale",
-    "reabstract",
-    "reflect_forget",
-    "reflect_merge",
-    "root_of",
-    "same_source",
-    "viewpoint_matches",
-    "walk_origin",
-    "walk_origins",
 ]
