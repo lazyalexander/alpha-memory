@@ -1,0 +1,11 @@
+services:
+  alpha-memory:
+    build: .
+    image: alpha-memory:local
+    volumes:
+      # SQLite file lives on the host; container reads/writes via /data
+      - ./data:/data
+    environment:
+      ALPHA_MEMORY_DB: /data/alpha_memory.db
+    # default: run unit tests; override to open a shell or custom command
+    command: ["python", "-m", "unittest", "discover", "-v"]
