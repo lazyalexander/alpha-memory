@@ -2,6 +2,10 @@
 SQLite persistence for AdmittedMemory / NodeMemory / ObservationMemory.
 
 Free functions only — not methods on memory records.
+
+Index policy:
+  admitted_index / node_index / observation_index may be passed as int, or
+  None to omit the PK column and let SQLite assign (then lastrowid is used).
 """
 
 from __future__ import annotations
@@ -33,12 +37,35 @@ def init_db(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-def insert_admitted(conn: sqlite3.Connection, row: AdmittedMemory) -> None:
-    conn.execute(
-        "INSERT INTO admitted (admitted_index, data, from_agent) VALUES (?, ?, ?)",
-        (row.admitted_index, row.data, row.from_agent),
-    )
+def insert_admitted(
+    conn: sqlite3.Connection,
+    *,
+    data: str,
+    from_agent: int,
+    admitted_index: int | None = None,
+) -> AdmittedMemory:
+    """
+    Insert admitted row. If admitted_index is None, SQLite assigns the PK.
+    Returns a complete AdmittedMemory with the final index.
+    """
+    if admitted_index is None:
+        cur = conn.execute(
+            "INSERT INTO admitted (data, from_agent) VALUES (?, ?)",
+            (data, from_agent),
+        )
+        new_id = int(cur.lastrowid)
+    else:
+        cur = conn.execute(
+            "INSERT INTO admitted (admitted_index, data, from_agent) VALUES (?, ?, ?)",
+            (admitted_index, data, from_agent),
+        )
+        new_id = admitted_index
     conn.commit()
+    return AdmittedMemory(
+        admitted_index=new_id,
+        data=data,
+        from_agent=from_agent,
+    )
 
 
 def get_admitted(
@@ -58,22 +85,50 @@ def get_admitted(
     )
 
 
-def insert_node(conn: sqlite3.Connection, row: NodeMemory) -> None:
-    conn.execute(
-        """
-        INSERT INTO node (
-            node_index, sandbox_id, timestamp, parent_node_index, admitted_index
-        ) VALUES (?, ?, ?, ?, ?)
-        """,
-        (
-            row.node_index,
-            row.sandbox_id,
-            float(row.timestamp),
-            row.parent_node_index,
-            row.admitted_index,
-        ),
-    )
+def insert_node(
+    conn: sqlite3.Connection,
+    *,
+    sandbox_id: str,
+    timestamp: int | float,
+    parent_node_index: int | None,
+    admitted_index: int,
+    node_index: int | None = None,
+) -> NodeMemory:
+    """Insert node; node_index None => SQLite assigns PK."""
+    if node_index is None:
+        cur = conn.execute(
+            """
+            INSERT INTO node (
+                sandbox_id, timestamp, parent_node_index, admitted_index
+            ) VALUES (?, ?, ?, ?)
+            """,
+            (sandbox_id, float(timestamp), parent_node_index, admitted_index),
+        )
+        new_id = int(cur.lastrowid)
+    else:
+        cur = conn.execute(
+            """
+            INSERT INTO node (
+                node_index, sandbox_id, timestamp, parent_node_index, admitted_index
+            ) VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                node_index,
+                sandbox_id,
+                float(timestamp),
+                parent_node_index,
+                admitted_index,
+            ),
+        )
+        new_id = node_index
     conn.commit()
+    return NodeMemory(
+        node_index=new_id,
+        sandbox_id=sandbox_id,
+        timestamp=float(timestamp),
+        parent_node_index=parent_node_index,
+        admitted_index=admitted_index,
+    )
 
 
 def get_node(conn: sqlite3.Connection, node_index: int) -> NodeMemory | None:
@@ -108,25 +163,66 @@ def _tags_from_json(raw: str) -> frozenset[str]:
     return frozenset(str(x) for x in data)
 
 
-def insert_observation(conn: sqlite3.Connection, row: ObservationMemory) -> None:
-    conn.execute(
-        """
-        INSERT INTO observation (
-            observation_index, agent_id, viewpoint_index,
-            source_node_index, source_observation_index, tags_json, timestamp
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-        """,
-        (
-            row.observation_index,
-            row.agent_id,
-            row.viewpoint_index,
-            row.source_node_index,
-            row.source_observation_index,
-            _tags_to_json(row.tags),
-            float(row.timestamp),
-        ),
-    )
+def insert_observation(
+    conn: sqlite3.Connection,
+    *,
+    agent_id: int,
+    viewpoint_index: int,
+    source_node_index: int,
+    source_observation_index: int | None,
+    tags: frozenset[str],
+    timestamp: int | float,
+    observation_index: int | None = None,
+) -> ObservationMemory:
+    """Insert observation; observation_index None => SQLite assigns PK."""
+    tags_json = _tags_to_json(tags)
+    if observation_index is None:
+        cur = conn.execute(
+            """
+            INSERT INTO observation (
+                agent_id, viewpoint_index,
+                source_node_index, source_observation_index, tags_json, timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                agent_id,
+                viewpoint_index,
+                source_node_index,
+                source_observation_index,
+                tags_json,
+                float(timestamp),
+            ),
+        )
+        new_id = int(cur.lastrowid)
+    else:
+        cur = conn.execute(
+            """
+            INSERT INTO observation (
+                observation_index, agent_id, viewpoint_index,
+                source_node_index, source_observation_index, tags_json, timestamp
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                observation_index,
+                agent_id,
+                viewpoint_index,
+                source_node_index,
+                source_observation_index,
+                tags_json,
+                float(timestamp),
+            ),
+        )
+        new_id = observation_index
     conn.commit()
+    return ObservationMemory(
+        observation_index=new_id,
+        agent_id=agent_id,
+        viewpoint_index=viewpoint_index,
+        source_node_index=source_node_index,
+        source_observation_index=source_observation_index,
+        tags=tags,
+        timestamp=float(timestamp),
+    )
 
 
 def get_observation(

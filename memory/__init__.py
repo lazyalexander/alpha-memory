@@ -14,6 +14,9 @@ Kinds
 - admitted.py      AdmittedMemory   (legal payload, str MVP)
 - node.py          NodeMemory       (git-style pointer to admitted)
 - observation.py   ObservationMemory (agent×viewpoint cognition metadata)
+
+Index strategy config (data only): index_config.py
+  Implementations of allocate live in util/index_alloc.py.
 """
 
 from memory.admitted import AdmittedMemory
@@ -23,12 +26,22 @@ from memory.common import (
     NumericTimestamp,
     SandboxId,
 )
+from memory.index_config import (
+    DEFAULT_SQLITE_AUTO,
+    MEM_KINDS,
+    IndexStrategyConfig,
+    MemKind,
+)
 from memory.node import NodeMemory
 from memory.observation import ObservationMemory
 
 __all__ = [
+    "DEFAULT_SQLITE_AUTO",
     "AdmittedMemory",
     "ImmutableIndex",
+    "IndexStrategyConfig",
+    "MEM_KINDS",
+    "MemKind",
     "MemoryTags",
     "NodeMemory",
     "NumericTimestamp",

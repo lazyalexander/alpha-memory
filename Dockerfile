@@ -10,7 +10,8 @@ RUN apt-get update \
 
 COPY memory/ /app/memory/
 COPY storage/ /app/storage/
-COPY func.py test_func.py test_memory.py test_storage.py /app/
+COPY util/ /app/util/
+COPY func.py test_func.py test_memory.py test_storage.py test_index_alloc.py /app/
 
 # Persistent DB directory (mount a volume here)
 RUN mkdir -p /data

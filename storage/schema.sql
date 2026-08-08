@@ -3,8 +3,9 @@
 -- Enable: PRAGMA foreign_keys = ON;
 
 -- Layer A: legal payload (str MVP)
+-- INTEGER PRIMARY KEY may be omitted on INSERT for SQLite rowid assignment.
 CREATE TABLE IF NOT EXISTS admitted (
-    admitted_index  INTEGER PRIMARY KEY NOT NULL,
+    admitted_index  INTEGER PRIMARY KEY,
     data            TEXT    NOT NULL,
     from_agent      INTEGER NOT NULL
 );
@@ -14,7 +15,7 @@ CREATE INDEX IF NOT EXISTS idx_admitted_from_agent
 
 -- Layer N: git-style node; pointer to admitted only (no embedded payload)
 CREATE TABLE IF NOT EXISTS node (
-    node_index          INTEGER PRIMARY KEY NOT NULL,
+    node_index          INTEGER PRIMARY KEY,
     sandbox_id          TEXT    NOT NULL,
     timestamp           REAL    NOT NULL,
     parent_node_index   INTEGER NULL,
@@ -33,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_node_parent
 -- Layer O: agent×viewpoint observation metadata (no reading body, no score)
 -- tags stored as JSON array text, e.g. ["a","b"]
 CREATE TABLE IF NOT EXISTS observation (
-    observation_index         INTEGER PRIMARY KEY NOT NULL,
+    observation_index         INTEGER PRIMARY KEY,
     agent_id                  INTEGER NOT NULL,
     viewpoint_index           INTEGER NOT NULL,
     source_node_index         INTEGER NOT NULL,
