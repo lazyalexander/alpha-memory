@@ -19,12 +19,21 @@ from memory import AdmittedMemory, NodeMemory, ObservationMemory
 _SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
 
-def connect(db_path: str | Path) -> sqlite3.Connection:
-    """Open connection with foreign keys on. Creates parent dirs if needed."""
+def connect(
+    db_path: str | Path,
+    *,
+    check_same_thread: bool = True,
+) -> sqlite3.Connection:
+    """
+    Open connection with foreign keys on. Creates parent dirs if needed.
+
+    check_same_thread=False: allow one connection shared across threads when
+    callers serialize writes (e.g. sandbox admit_lock on build_admitted).
+    """
     path = Path(db_path)
     if path.parent != Path(".") and str(path.parent) != "":
         path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(path))
+    conn = sqlite3.connect(str(path), check_same_thread=check_same_thread)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
@@ -43,10 +52,13 @@ def insert_admitted(
     data: str,
     from_agent: int,
     admitted_index: int | None = None,
+    commit: bool = True,
 ) -> AdmittedMemory:
     """
     Insert admitted row. If admitted_index is None, SQLite assigns the PK.
     Returns a complete AdmittedMemory with the final index.
+
+    commit=False: leave the transaction open for the caller (e.g. BEGIN IMMEDIATE).
     """
     if admitted_index is None:
         cur = conn.execute(
@@ -60,7 +72,8 @@ def insert_admitted(
             (admitted_index, data, from_agent),
         )
         new_id = admitted_index
-    conn.commit()
+    if commit:
+        conn.commit()
     return AdmittedMemory(
         admitted_index=new_id,
         data=data,

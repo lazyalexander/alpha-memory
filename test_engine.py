@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import os
 import tempfile
+import threading
 import unittest
 from functools import partial
 from pathlib import Path
@@ -34,11 +35,13 @@ engine = _load_engine()
 class TestEngineBuild(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
-        self.conn = connect(os.path.join(self._tmp.name, "e.db"))
+        self.db_path = os.path.join(self._tmp.name, "e.db")
+        self.conn = connect(self.db_path)
         init_db(self.conn)
         self.acq_a = partial(allocate, DEFAULT_SQLITE_AUTO, "admitted")
         self.acq_n = partial(allocate, DEFAULT_SQLITE_AUTO, "node")
         self.acq_o = partial(allocate, DEFAULT_SQLITE_AUTO, "observation")
+        self.admit_lock = threading.Lock()
 
     def tearDown(self) -> None:
         self.conn.close()
@@ -50,6 +53,7 @@ class TestEngineBuild(unittest.TestCase):
             data="hello",
             from_agent=3,
             acquire_index=self.acq_a,
+            admit_lock=self.admit_lock,
         )
         self.assertIsInstance(a.admitted_index, int)
         self.assertEqual(get_admitted(self.conn, a.admitted_index), a)
@@ -67,7 +71,11 @@ class TestEngineBuild(unittest.TestCase):
 
     def test_build_chain_a_n_o(self) -> None:
         a = engine.build_admitted(
-            self.conn, data="payload", from_agent=1, acquire_index=self.acq_a
+            self.conn,
+            data="payload",
+            from_agent=1,
+            acquire_index=self.acq_a,
+            admit_lock=self.admit_lock,
         )
         n = engine.build_node(
             self.conn,
@@ -107,8 +115,56 @@ class TestEngineBuild(unittest.TestCase):
             data="x",
             from_agent=0,
             acquire_index=lambda: 42,
+            admit_lock=self.admit_lock,
         )
         self.assertEqual(a.admitted_index, 42)
+
+    def test_admit_lock_unique_and_ordered(self) -> None:
+        """Concurrent admits with one lock: unique ids; ORDER BY index = order."""
+        # Shared connection across threads; admit_lock serializes all access.
+        self.conn.close()
+        self.conn = connect(self.db_path, check_same_thread=False)
+
+        n = 20
+        results: list = []
+        errors: list[BaseException] = []
+        barrier = threading.Barrier(n)
+        results_lock = threading.Lock()
+
+        def worker(i: int) -> None:
+            try:
+                barrier.wait(timeout=5)
+                row = engine.build_admitted(
+                    self.conn,
+                    data=f"d{i}",
+                    from_agent=i,
+                    acquire_index=self.acq_a,
+                    admit_lock=self.admit_lock,
+                )
+                with results_lock:
+                    results.append(row)
+            except BaseException as e:
+                with results_lock:
+                    errors.append(e)
+
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(n)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=10)
+
+        self.assertEqual(errors, [])
+        self.assertEqual(len(results), n)
+        ids = [r.admitted_index for r in results]
+        self.assertEqual(len(ids), len(set(ids)), "admitted_index must be unique")
+
+        cur = self.conn.execute(
+            "SELECT admitted_index FROM admitted ORDER BY admitted_index ASC"
+        )
+        ordered = [int(r[0]) for r in cur.fetchall()]
+        self.assertEqual(ordered, sorted(ids))
+        # sqlite_auto: indices are contiguous from first id over n admits
+        self.assertEqual(ordered, list(range(ordered[0], ordered[0] + n)))
 
 
 if __name__ == "__main__":

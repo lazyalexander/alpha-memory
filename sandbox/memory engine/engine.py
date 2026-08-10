@@ -9,6 +9,14 @@ Responsibility
 
 No updates or deletes of A/N/O domain rows. Branching = new Node rows.
 
+Admitted uniqueness + order (sandbox-local)
+-------------------------------------------
+- Uniqueness: ``admitted_index`` INTEGER PRIMARY KEY in the sandbox DB.
+- Order: one ``admit_lock`` per sandbox + serial INSERT; with ``sqlite_auto``
+  (acquire returns None), ``ORDER BY admitted_index`` = admission order.
+- Pass the same ``threading.Lock`` on every ``build_admitted`` for that DB.
+- Node/Observation builds do not use admit_lock.
+
 Index acquisition
 -----------------
 ``acquire_index`` is a zero-arg callable: () -> int | None
@@ -20,13 +28,16 @@ Typical binding (sandbox-frozen config)::
     from functools import partial
     from util.index_alloc import allocate
     acquire = partial(allocate, sandbox_index_config, "admitted")
-    build_admitted(conn, data=..., from_agent=..., acquire_index=acquire)
+    build_admitted(conn, data=..., from_agent=..., acquire_index=acquire,
+                   admit_lock=sandbox_admit_lock)
 """
 
 from __future__ import annotations
 
 import sqlite3
+import threading
 from collections.abc import Callable
+from contextlib import nullcontext
 from typing import TypeAlias
 
 from memory import AdmittedMemory, NodeMemory, ObservationMemory
@@ -60,24 +71,40 @@ def build_admitted(
     data: str,
     from_agent: int,
     acquire_index: IndexAcquire,
+    admit_lock: threading.Lock | None = None,
 ) -> AdmittedMemory:
     """
     Build and persist AdmittedMemory (single payload ingress).
 
-    acquire_index: index method for admitted kind.
+    Uniqueness: PK in this connection's DB (one DB per sandbox).
+    Order: hold ``admit_lock`` (one per sandbox) so admissions are totally
+    ordered; under sqlite_auto, admitted_index is monotonic with that order.
+
     Returns complete record only after successful INSERT.
     """
     if not isinstance(data, str):
         raise TypeError("data must be str (MVP)")
     if data == "":
         raise ValueError("data must be non-empty")
-    idx = _resolve_index(acquire_index)
-    return insert_admitted(
-        conn,
-        data=data,
-        from_agent=from_agent,
-        admitted_index=idx,
-    )
+
+    gate = admit_lock if admit_lock is not None else nullcontext()
+    with gate:
+        # Take the write lock before allocate+insert so order is well-defined.
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            idx = _resolve_index(acquire_index)
+            row = insert_admitted(
+                conn,
+                data=data,
+                from_agent=from_agent,
+                admitted_index=idx,
+                commit=False,
+            )
+            conn.commit()
+            return row
+        except Exception:
+            conn.rollback()
+            raise
 
 
 def build_node(
