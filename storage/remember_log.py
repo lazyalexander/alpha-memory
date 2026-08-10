@@ -124,17 +124,29 @@ class FileRememberLog:
         if start_id < 1:
             start_id = 1
         start_seg = (start_id - 1) // self.events_per_segment + 1
-        # Discover segments
-        segs = sorted(self.log_dir.glob("seg_*.log"))
-        for path in segs:
-            # seg_000001.log -> 1
+        for path, num in self._segment_files():
+            if num < start_seg:
+                continue
+            yield from self._read_segment(path, min_event_id=start_id)
+
+    def max_event_id(self) -> int:
+        """Largest event_id present in segment files; 0 if empty."""
+        max_id = 0
+        for path, _num in self._segment_files():
+            for ev in self._read_segment(path, min_event_id=1):
+                if ev.event_id > max_id:
+                    max_id = ev.event_id
+        return max_id
+
+    def _segment_files(self) -> list[tuple[Path, int]]:
+        out: list[tuple[Path, int]] = []
+        for path in sorted(self.log_dir.glob("seg_*.log")):
             try:
                 num = int(path.stem.split("_", 1)[1])
             except (IndexError, ValueError):
                 continue
-            if num < start_seg:
-                continue
-            yield from self._read_segment(path, min_event_id=start_id)
+            out.append((path, num))
+        return out
 
     def _read_segment(
         self, path: Path, *, min_event_id: int

@@ -141,6 +141,53 @@ class TestRememberPipeline(unittest.TestCase):
         self.assertEqual([b.data for b in built], ["a", "b"])
         self.assertEqual(self.log.load_checkpoint(), 2)
 
+    def test_inspect_detects_pending(self) -> None:
+        submit_remember_event(
+            self.log, self.allocator, data="x", from_agent=1, id_lock=self.id_lock
+        )
+        report = consumer.inspect_sandbox(
+            self.conn,
+            self.log,
+            event_id_path=os.path.join(self._tmp.name, "event_id"),
+        )
+        self.assertTrue(report.needs_replay)
+        self.assertTrue(report.unclean_shutdown_suspected)
+        self.assertEqual(report.missing_admitted_count, 1)
+        self.assertEqual(report.pending_event_count, 1)
+        self.assertEqual(report.checkpoint_before, 0)
+        self.assertEqual(report.max_log_event_id, 1)
+
+    def test_recover_sandbox_auto_replay(self) -> None:
+        submit_remember_event(
+            self.log, self.allocator, data="a", from_agent=0, id_lock=self.id_lock
+        )
+        submit_remember_event(
+            self.log, self.allocator, data="b", from_agent=0, id_lock=self.id_lock
+        )
+        event_id_path = os.path.join(self._tmp.name, "event_id")
+        report = consumer.recover_sandbox(
+            self.conn,
+            self.log,
+            admit_lock=self.admit_lock,
+            event_id_path=event_id_path,
+        )
+        self.assertTrue(report.needs_replay)
+        self.assertEqual(report.replayed, 2)
+        self.assertEqual(report.checkpoint_after, 2)
+        self.assertEqual(report.missing_admitted_count, 2)  # before replay
+        self.assertIsNotNone(get_admitted(self.conn, 1))
+        self.assertIsNotNone(get_admitted(self.conn, 2))
+        # second recover: clean
+        report2 = consumer.recover_sandbox(
+            self.conn,
+            self.log,
+            admit_lock=self.admit_lock,
+            event_id_path=event_id_path,
+        )
+        self.assertFalse(report2.needs_replay)
+        self.assertEqual(report2.replayed, 0)
+        self.assertEqual(report2.pending_event_count, 0)
+
     def test_remember_async(self) -> None:
         async def run() -> None:
             row = await remember_async(
