@@ -1,21 +1,19 @@
 """
 Memory tools — agent-facing operations on memory (orchestration, not storage).
-
-Tools call Memory Engine for I/O. Domain records stay pure data in memory/*.
 """
 
 from memory.tools.remember import (
-    RememberRequest,
+    RememberTicket,
     admit_validate,
-    process_remember_queue,
     remember,
-    submit_remember,
+    remember_async,
+    submit_remember_event,
 )
 
 __all__ = [
-    "RememberRequest",
+    "RememberTicket",
     "admit_validate",
-    "process_remember_queue",
     "remember",
-    "submit_remember",
+    "remember_async",
+    "submit_remember_event",
 ]

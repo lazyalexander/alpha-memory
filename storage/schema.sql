@@ -2,6 +2,20 @@
 -- App rule: INSERT only for domain rows (no in-place update of mem content).
 -- Enable: PRAGMA foreign_keys = ON;
 
+-- Remember intent log (durable queue). event_id assigned by app EventIdAllocator.
+CREATE TABLE IF NOT EXISTS remember_event (
+    event_id    INTEGER PRIMARY KEY NOT NULL,
+    data        TEXT    NOT NULL,
+    from_agent  INTEGER NOT NULL,
+    status      TEXT    NOT NULL,
+    error       TEXT,
+    CHECK (status IN ('pending', 'done', 'failed'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_remember_event_status
+    ON remember_event (status, event_id);
+
+
 -- Layer A: legal payload (str MVP)
 -- INTEGER PRIMARY KEY may be omitted on INSERT for SQLite rowid assignment.
 CREATE TABLE IF NOT EXISTS admitted (
