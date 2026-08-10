@@ -1,13 +1,8 @@
 """
 Single-sandbox admit consumer (coroutine).
 
-Responsibility
---------------
-Drain durable pending remember_events in event_id order, materialize each
-into admitted (admitted_index := event_id), mark done/failed.
-
-One consumer per sandbox. Producers only append events; they wait until
-admitted row exists before treating remember as complete.
+Replays FileRememberLog from checkpoint, materializes admitted
+(admitted_index := event_id), advances checkpoint. Truth = SQLite admitted.
 """
 
 from __future__ import annotations
@@ -19,7 +14,7 @@ import threading
 from pathlib import Path
 
 from memory import AdmittedMemory
-from storage.remember_log import list_pending, mark_done, mark_failed
+from storage.remember_log import FileRememberLog
 from storage.sqlite_store import get_admitted
 
 
@@ -40,41 +35,46 @@ _materialize = _load_materialize()
 
 def process_pending_once(
     conn: sqlite3.Connection,
+    log: FileRememberLog,
     *,
     admit_lock: threading.Lock | None = None,
     max_items: int | None = None,
 ) -> list[AdmittedMemory]:
     """
-    Synchronously process pending events in order (for tests / one-shot drain).
+    Process events after checkpoint in order.
+    On success: admitted exists + checkpoint advanced.
+    Idempotent if admitted already present.
     """
     built: list[AdmittedMemory] = []
-    pending = list_pending(conn)
-    if max_items is not None:
-        pending = pending[:max_items]
-    for event in pending:
-        try:
-            row = _materialize(conn, event, admit_lock=admit_lock)
-            mark_done(conn, event.event_id)
-            built.append(row)
-        except Exception as e:
-            mark_failed(conn, event.event_id, str(e))
+    cp = log.load_checkpoint()
+    n = 0
+    for event in log.iter_from(cp):
+        if max_items is not None and n >= max_items:
+            break
+        row = _materialize(conn, event, admit_lock=admit_lock)
+        # Only advance checkpoint after successful materialize (truth in DB).
+        if get_admitted(conn, event.event_id) is None:
+            raise RuntimeError(
+                f"materialize left no admitted row for event_id={event.event_id}"
+            )
+        log.save_checkpoint(event.event_id)
+        built.append(row)
+        n += 1
     return built
 
 
 async def admit_consumer_loop(
     conn: sqlite3.Connection,
+    log: FileRememberLog,
     *,
     admit_lock: threading.Lock | None = None,
     poll_interval: float = 0.01,
     stop_event: asyncio.Event | None = None,
 ) -> None:
-    """
-    Coroutine: repeatedly materialize pending remember events for one sandbox.
-    """
+    """Coroutine: one consumer per sandbox, replay log → SQLite."""
     stop = stop_event if stop_event is not None else asyncio.Event()
     while not stop.is_set():
-        # SQLite work off the event loop thread if needed; sync is fine for MVP.
-        process_pending_once(conn, admit_lock=admit_lock)
+        process_pending_once(conn, log, admit_lock=admit_lock)
         try:
             await asyncio.wait_for(stop.wait(), timeout=poll_interval)
         except asyncio.TimeoutError:
@@ -88,12 +88,6 @@ def wait_until_admitted(
     timeout: float | None = 5.0,
     poll_interval: float = 0.01,
 ) -> AdmittedMemory | None:
-    """
-    Poll until admitted row exists (materialize complete) or timeout.
-
-    Non-blocking style when used with short timeout + external consumer;
-    for tests, call process_pending_once between polls or in another thread.
-    """
     import time
 
     deadline = None if timeout is None else time.monotonic() + timeout
@@ -113,7 +107,6 @@ async def wait_until_admitted_async(
     timeout: float | None = 5.0,
     poll_interval: float = 0.01,
 ) -> AdmittedMemory | None:
-    """Async poll until admitted_index = event_id exists."""
     loop = asyncio.get_event_loop()
     deadline = None if timeout is None else loop.time() + timeout
     while True:

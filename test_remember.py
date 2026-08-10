@@ -1,4 +1,4 @@
-"""Tests for durable remember event + materialize to admitted."""
+"""Tests for file segment remember log + materialize to admitted."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from memory.tools.remember import (
     submit_remember_event,
 )
 from storage import connect, get_admitted, init_db
-from storage.remember_log import get_event, list_pending
+from storage.remember_log import EVENTS_PER_SEGMENT, FileRememberLog, RememberEvent
 from util.event_id import FileEventIdAllocator
 
 
@@ -38,12 +38,39 @@ def _load_consumer():
 consumer = _load_consumer()
 
 
+class TestFileRememberLog(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = self._tmp.name
+        self.log = FileRememberLog(self.root)
+        self.alloc = FileEventIdAllocator(os.path.join(self.root, "event_id"))
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def test_segment_rotation_1000(self) -> None:
+        # event 1000 -> seg 1; event 1001 -> seg 2
+        self.assertEqual(EVENTS_PER_SEGMENT, 1000)
+        self.log.append(RememberEvent(1000, "a", 1))
+        self.log.append(RememberEvent(1001, "b", 1))
+        segs = sorted((Path(self.root) / "remember").glob("seg_*.log"))
+        self.assertEqual([p.name for p in segs], ["seg_000001.log", "seg_000002.log"])
+
+    def test_iter_from_checkpoint(self) -> None:
+        for i in range(1, 4):
+            self.log.append(RememberEvent(i, f"d{i}", 1))
+        self.log.save_checkpoint(1)
+        ids = [e.event_id for e in self.log.iter_from(self.log.load_checkpoint())]
+        self.assertEqual(ids, [2, 3])
+
+
 class TestRememberPipeline(unittest.TestCase):
     def setUp(self) -> None:
         self._tmp = tempfile.TemporaryDirectory()
         base = self._tmp.name
         self.conn = connect(os.path.join(base, "r.db"), check_same_thread=False)
         init_db(self.conn)
+        self.log = FileRememberLog(base)
         self.allocator = FileEventIdAllocator(os.path.join(base, "event_id"))
         self.admit_lock = threading.Lock()
         self.id_lock = threading.Lock()
@@ -55,24 +82,22 @@ class TestRememberPipeline(unittest.TestCase):
     def test_validate_stub(self) -> None:
         self.assertTrue(admit_validate("x", 1))
 
-    def test_submit_only_pending_no_admitted(self) -> None:
+    def test_submit_only_no_admitted_until_consumer(self) -> None:
         ticket = submit_remember_event(
-            self.conn,
+            self.log,
             self.allocator,
-            data="only-event",
+            data="only-log",
             from_agent=1,
             id_lock=self.id_lock,
         )
         assert ticket is not None
         self.assertIsNone(get_admitted(self.conn, ticket.event_id))
-        ev = get_event(self.conn, ticket.event_id)
-        assert ev is not None
-        self.assertEqual(ev.status, "pending")
-        self.assertEqual(list_pending(self.conn)[0].event_id, ticket.event_id)
+        self.assertEqual(self.log.load_checkpoint(), 0)
 
-    def test_remember_requires_admitted_row(self) -> None:
+    def test_remember_truth_is_admitted_row(self) -> None:
         row = remember(
             self.conn,
+            self.log,
             self.allocator,
             data="hello",
             from_agent=2,
@@ -80,43 +105,47 @@ class TestRememberPipeline(unittest.TestCase):
             id_lock=self.id_lock,
         )
         assert row is not None
-        self.assertEqual(row.data, "hello")
-        # admitted_index := event_id
         self.assertEqual(row.admitted_index, 1)
+        self.assertEqual(row.data, "hello")
         self.assertEqual(get_admitted(self.conn, 1), row)
-        ev = get_event(self.conn, 1)
-        assert ev is not None
-        self.assertEqual(ev.status, "done")
+        self.assertEqual(self.log.load_checkpoint(), 1)
 
-    def test_event_id_monotonic_independent_of_sql_auto(self) -> None:
-        t1 = submit_remember_event(
-            self.conn, self.allocator, data="a", from_agent=0, id_lock=self.id_lock
+    def test_replay_skips_existing_admitted(self) -> None:
+        t = submit_remember_event(
+            self.log, self.allocator, data="x", from_agent=1, id_lock=self.id_lock
         )
-        t2 = submit_remember_event(
-            self.conn, self.allocator, data="b", from_agent=0, id_lock=self.id_lock
+        assert t is not None
+        consumer.process_pending_once(
+            self.conn, self.log, admit_lock=self.admit_lock
         )
-        assert t1 and t2
-        self.assertEqual(t1.event_id, 1)
-        self.assertEqual(t2.event_id, 2)
-        consumer.process_pending_once(self.conn, admit_lock=self.admit_lock)
-        self.assertEqual(get_admitted(self.conn, 1).data, "a")  # type: ignore[union-attr]
-        self.assertEqual(get_admitted(self.conn, 2).data, "b")  # type: ignore[union-attr]
-
-    def test_idempotent_rematerialize(self) -> None:
-        ticket = submit_remember_event(
-            self.conn, self.allocator, data="x", from_agent=1, id_lock=self.id_lock
+        # second pass: checkpoint already at end
+        again = consumer.process_pending_once(
+            self.conn, self.log, admit_lock=self.admit_lock
         )
-        assert ticket is not None
-        consumer.process_pending_once(self.conn, admit_lock=self.admit_lock)
-        # pending empty; second pass no-op
-        again = consumer.process_pending_once(self.conn, admit_lock=self.admit_lock)
         self.assertEqual(again, [])
-        self.assertIsNotNone(get_admitted(self.conn, ticket.event_id))
+        self.assertIsNotNone(get_admitted(self.conn, t.event_id))
+
+    def test_crash_replay_from_log(self) -> None:
+        """Log has events, checkpoint behind, consumer catches up."""
+        submit_remember_event(
+            self.log, self.allocator, data="a", from_agent=0, id_lock=self.id_lock
+        )
+        submit_remember_event(
+            self.log, self.allocator, data="b", from_agent=0, id_lock=self.id_lock
+        )
+        # no materialize yet
+        self.assertIsNone(get_admitted(self.conn, 1))
+        built = consumer.process_pending_once(
+            self.conn, self.log, admit_lock=self.admit_lock
+        )
+        self.assertEqual([b.data for b in built], ["a", "b"])
+        self.assertEqual(self.log.load_checkpoint(), 2)
 
     def test_remember_async(self) -> None:
         async def run() -> None:
             row = await remember_async(
                 self.conn,
+                self.log,
                 self.allocator,
                 data="async-payload",
                 from_agent=9,
@@ -125,7 +154,6 @@ class TestRememberPipeline(unittest.TestCase):
             )
             self.assertIsNotNone(row)
             assert row is not None
-            self.assertEqual(row.admitted_index, row.admitted_index)
             self.assertEqual(get_admitted(self.conn, row.admitted_index), row)
 
         asyncio.run(run())

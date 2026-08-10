@@ -1,13 +1,7 @@
 """
-Materialize remember events into AdmittedMemory.
+Materialize remember log events into AdmittedMemory (domain truth).
 
-Responsibility
---------------
-Given a durable RememberEvent (pending), ensure admitted row exists with
-admitted_index := event_id, then the event may be marked done.
-
-Idempotent: if admitted already exists for event_id, no-op success.
-Does not assign ids — event_id is provided by the app allocator.
+admitted_index := event_id (explicit). Idempotent if row already exists.
 """
 
 from __future__ import annotations
@@ -43,12 +37,7 @@ def materialize_remember_event(
     *,
     admit_lock: threading.Lock | None = None,
 ) -> AdmittedMemory:
-    """
-    Ensure AdmittedMemory(event_id) exists; return it.
-
-    On success the caller should mark the event done only after this returns
-    without error (and commit succeeded inside build_admitted).
-    """
+    """Ensure AdmittedMemory(event_id) exists in SQLite; return it."""
     existing = get_admitted(conn, event.event_id)
     if existing is not None:
         return existing

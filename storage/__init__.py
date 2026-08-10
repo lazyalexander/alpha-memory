@@ -1,16 +1,11 @@
 """
-Persistence for A/N/O memory records.
-
-Domain types stay in ``memory/`` (data only). SQL + connection ops live here.
+Persistence for A/N/O memory records and file remember log.
 """
 
 from storage.remember_log import (
+    EVENTS_PER_SEGMENT,
+    FileRememberLog,
     RememberEvent,
-    append_pending,
-    get_event,
-    list_pending,
-    mark_done,
-    mark_failed,
 )
 from storage.sqlite_store import (
     connect,
@@ -24,18 +19,15 @@ from storage.sqlite_store import (
 )
 
 __all__ = [
+    "EVENTS_PER_SEGMENT",
+    "FileRememberLog",
     "RememberEvent",
-    "append_pending",
     "connect",
     "get_admitted",
-    "get_event",
     "get_node",
     "get_observation",
     "init_db",
     "insert_admitted",
     "insert_node",
     "insert_observation",
-    "list_pending",
-    "mark_done",
-    "mark_failed",
 ]
