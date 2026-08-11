@@ -10,3 +10,6 @@ data/
 *.db-wal
 *.db-shm
 
+# Internal thinking notes — never upload
+note/
+
