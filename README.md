@@ -82,12 +82,6 @@ The engine is one Rust program: the log, the slot table, reflection, and recall.
 
 Harness differences stay in thin adapters. Those adapters are not in this version. Codex calls the program from lifecycle hooks and an MCP server. OpenCode and `dsh` load a small TypeScript plugin that registers tools and injects context. Storage and recall stay in the Rust program.
 
-## OpenCode
-
-The installed match is OpenCode 1.19. A plugin at `.opencode/plugins/alpha-memory.js` is loaded automatically in this repository. It shells out to `alpha-memory`. Set `ALPHA_MEMORY_BIN` when the debug binary at `target/debug/alpha-memory` is not the one to use.
-
-OpenCode session ids (`ses_` plus letters and digits) are used as alpha-memory session ids. The project directory is the workspace. The engine still does not decide intent: every turn injects the standing set and the current session, and long-term memory stays closed until the model calls `memory_recall` with `open_long_term`. `memory_keep` stores the summary the model writes. Compaction records a structural mid-term entry over events that are not covered yet.
-
 ## Commands
 
 ```sh
