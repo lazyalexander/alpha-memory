@@ -5,7 +5,8 @@ use clap::{Parser, Subcommand};
 use serde::Serialize;
 
 use alpha_memory::{
-    default_user_home, Append, Engine, RecallQuery, ReflectLong, ReflectMid, DEFAULT_RECENT,
+    default_user_home, Append, Engine, Hint, RecallQuery, ReflectLong, ReflectMid, TaskPatch,
+    DEFAULT_RECENT,
 };
 
 #[derive(Parser)]
@@ -39,7 +40,7 @@ enum Command {
         body: Option<String>,
         #[arg(long)]
         config_key: Option<String>,
-        #[arg(long)]
+        #[arg(long, allow_hyphen_values = true)]
         config_value: Option<String>,
         #[arg(long)]
         stage: Option<String>,
@@ -55,6 +56,95 @@ enum Command {
         failure: bool,
         #[arg(long)]
         decision: bool,
+    },
+    /// Capture a complete host text part from stdin. Redact before splitting large parts.
+    Capture {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        kind: String,
+        #[arg(long)]
+        interaction: Option<String>,
+    },
+    /// Attach inferred facts (JSON array on stdin) to one stored, redacted capture.
+    Tag {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        event: i64,
+        #[arg(long)]
+        extractor: String,
+    },
+    /// Read the active task handoff and standing user notes (no history).
+    Context {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        task: Option<String>,
+    },
+    /// Select/resume a task and patch only the fields that changed.
+    Task {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        task: String,
+        #[arg(long)]
+        goal: Option<String>,
+        #[arg(long)]
+        progress: Option<String>,
+        #[arg(long)]
+        next_step: Option<String>,
+        #[arg(long, requires = "hint")]
+        pin: Option<i64>,
+        #[arg(long, requires = "pin")]
+        hint: Option<String>,
+        #[arg(long)]
+        unpin: Option<i64>,
+        /// Apply only if this is still the active checkpoint (0: no active task).
+        #[arg(long)]
+        if_active_event: Option<i64>,
+        /// User-turn watermark captured when the successful compression started.
+        #[arg(long, requires = "if_active_event")]
+        compacted_through_turn: Option<i64>,
+    },
+    /// Look up one exact, scope-qualified key and its source event.
+    SessionConfig {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        key: String,
+    },
+    /// Find candidate event ids in the session's redacted log.
+    Index {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        query: String,
+        #[arg(long)]
+        task: Option<String>,
+        #[arg(long)]
+        before: Option<i64>,
+        #[arg(long, default_value_t = 6)]
+        limit: u32,
+    },
+    /// Find candidates and original evidence preceding a captured user question. Read the workspace vocabulary from stdin.
+    ReviewContext {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        question_id: String,
+    },
+    /// Read a source event, optionally including nearby original events.
+    Source {
+        #[arg(long)]
+        session: String,
+        #[arg(long, required_unless_present = "mid", conflicts_with = "mid")]
+        event: Option<i64>,
+        /// Resolve a mid-term ID from a long-term summary to its original event range.
+        #[arg(long)]
+        mid: Option<i64>,
+        #[arg(long, requires = "event")]
+        around: Option<u32>,
     },
     /// Build the recall pack for a session.
     Recall {
@@ -90,6 +180,12 @@ enum Command {
 
 #[derive(Subcommand)]
 enum ReflectCommand {
+    /// Reflect only uncovered log spans, preserving task and period boundaries.
+    Pending {
+        #[arg(long)]
+        session: String,
+    },
+
     /// Write a mid-term entry over a log range.
     Mid {
         #[arg(long)]
@@ -191,6 +287,86 @@ fn run() -> alpha_memory::Result<()> {
             })?;
             print_json(&appended)?;
         }
+        Command::Capture {
+            session,
+            kind,
+            interaction,
+        } => print_json(&engine.capture(
+            &session,
+            &kind,
+            interaction.as_deref(),
+            &read_body(Some("-".into()))?,
+        )?)?,
+        Command::Tag {
+            session,
+            event,
+            extractor,
+        } => {
+            let facts: Vec<alpha_memory::FactTag> =
+                serde_json::from_reader(std::io::stdin().lock())?;
+            print_json(&engine.tag_event(&session, event, &extractor, &facts)?)?;
+        }
+        Command::Context { session, task } => {
+            print_json(&engine.task_context(&session, task.as_deref())?)?
+        }
+        Command::Task {
+            session,
+            task,
+            goal,
+            progress,
+            next_step,
+            pin,
+            hint,
+            unpin,
+            if_active_event,
+            compacted_through_turn,
+        } => {
+            let patch = TaskPatch {
+                goal,
+                progress,
+                next_step,
+                pin: pin
+                    .zip(hint)
+                    .map(|(event_id, text)| Hint { event_id, text }),
+                unpin,
+                if_active_event,
+                compacted_through_turn,
+            };
+            print_json(&engine.update_task(&session, &task, patch)?)?;
+        }
+        Command::SessionConfig { session, key } => {
+            print_json(&engine.session_config(&session, &key)?)?
+        }
+        Command::Index {
+            session,
+            query,
+            task,
+            before,
+            limit,
+        } => {
+            print_json(&engine.evidence_index(&session, &query, task.as_deref(), before, limit)?)?
+        }
+        Command::ReviewContext {
+            session,
+            question_id,
+        } => {
+            let vocab = serde_json::from_reader(std::io::stdin().lock())?;
+            print_json(&engine.review_context(&session, &question_id, &vocab)?)?;
+        }
+        Command::Source {
+            session,
+            event,
+            mid,
+            around,
+        } => match (event, mid) {
+            (Some(id), None) => print_json(&engine.source(&session, id, around.unwrap_or(0))?)?,
+            (None, Some(id)) => print_json(&engine.source_span(&session, id)?)?,
+            _ => {
+                return Err(alpha_memory::Error::Message(
+                    "choose an event or a mid ID".into(),
+                ))
+            }
+        },
         Command::Recall {
             session,
             task,
@@ -208,6 +384,7 @@ fn run() -> alpha_memory::Result<()> {
             print_json(&pack)?;
         }
         Command::Reflect { command } => match command {
+            ReflectCommand::Pending { session } => print_json(&engine.reflect_pending(&session)?)?,
             ReflectCommand::Mid {
                 session,
                 task,

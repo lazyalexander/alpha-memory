@@ -54,7 +54,7 @@ pub fn classify(signals: Signals<'_>) -> Option<Kind> {
     if let Some(kind) = signals.event_kind.and_then(Kind::parse) {
         return Some(kind);
     }
-    if has_text(signals.config_key) && has_text(signals.config_value) {
+    if has_text(signals.config_key) && signals.config_value.is_some() {
         return Some(Kind::Config);
     }
     if has_text(signals.stage) {

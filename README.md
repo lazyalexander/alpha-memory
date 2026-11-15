@@ -1,13 +1,6 @@
 # alpha-memory
 
-alpha-memory is a long-term memory system for coding-agent harnesses. Several agents and a person can share a session, and every session shares one user directory. Memory is a first-class part of the system: it is governed, not pasted back into the prompt as a transcript. The aim is to stay useful across long, hard problems.
-
-Language models compress the time a person needs to do the work. They do not replace the person. Collaboration is the point.
-
-Governed memory is there to:
-
-1. Lower the chance of hallucinations and harmful accidents.
-2. Support the rest of the system: noticing when the environment changes, auditing token spend, and checking safety.
+A Rust memory engine for session logs, task checkpoints, evidence retrieval and recall. Callers pass a workspace and session ID through the CLI. Host plugins and model-driven experiments live in separate repositories.
 
 ## Caller and model
 
@@ -38,8 +31,9 @@ Belonging is a pure function of the caller's signals, in this order:
 
 Anything else stays in the log and is not promoted on its own. A failure that also carries a config pair is recorded as a failure, and the slot still updates. One event is not both a failure and a decision.
 
-### Read
+### Explicit session recall
 
+The existing `recall` command builds a broader session pack on request.
 Recall always returns:
 
 - standing constraints and behavioral preferences, from the user directory
@@ -76,18 +70,6 @@ The caller runs reflection at session end, before context compaction, and when t
 
 `reflect mid` reads a span of the session log and writes a mid-term entry. `reflect long` reads mid-term ids only, writes a long-term entry, and marks those mid-term entries promoted. Promoted mid-term entries leave the default recall pack. Their long-term entry is visible only when the caller opens long-term memory.
 
-## Where it runs
-
-The engine is one Rust program: the log, the slot table, reflection, and recall. Codex, OpenCode, and DeepSeek Harness (`dsh`) can share a session when they pass the same workspace and session id. They already share the user directory.
-
-Harness differences stay in thin adapters. Those adapters are not in this version. Codex calls the program from lifecycle hooks and an MCP server. OpenCode and `dsh` load a small TypeScript plugin that registers tools and injects context. Storage and recall stay in the Rust program.
-
-## OpenCode
-
-The installed match is OpenCode 1.19. A plugin at `.opencode/plugins/alpha-memory.js` is loaded automatically in this repository. It shells out to `alpha-memory`. Set `ALPHA_MEMORY_BIN` when the debug binary at `target/debug/alpha-memory` is not the one to use.
-
-OpenCode session ids (`ses_` plus letters and digits) are used as alpha-memory session ids. The project directory is the workspace. The engine still does not decide intent: every turn injects the standing set and the current session, and long-term memory stays closed until the model calls `memory_recall` with `open_long_term`. `memory_keep` stores the summary the model writes. Compaction records a structural mid-term entry over events that are not covered yet.
-
 ## Commands
 
 ```sh
@@ -103,6 +85,18 @@ alpha-memory reflect long --session s1 --mids 1 --topic db --body "Keep the sess
 
 `--body -` reads stdin. `--workspace` selects the repo. `--user-home` selects the user directory for one invocation.
 
-## Status
+A task with an indexed constraint can be resumed as follows (fresh session):
 
-This version is the Rust engine and the `alpha-memory` command. It implements the contract above. Harness plugins are not included yet.
+```sh
+alpha-memory append --session demo --config-key staging.probe.port --config-value 4761 --body "Legacy client requirement"
+alpha-memory task --session demo --task probe --goal "Maintain staging probes" --pin 1 --hint "Check legacy client compatibility"
+alpha-memory context --session demo
+alpha-memory session-config --session demo --key staging.probe.port
+alpha-memory index --session demo --query "legacy client"
+alpha-memory source --session demo --event 1
+```
+
+`reflect pending` records only new, contiguous event spans from the same task.
+Promoted and superseded ranges remain covered.
+
+Build with `cargo build --locked` and run the engine tests with `cargo test --locked`.

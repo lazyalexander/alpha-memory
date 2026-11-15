@@ -17,3 +17,12 @@ pub use engine::{
 };
 pub use error::{Error, Result};
 pub use store::{LongTerm, MidTerm, Note, Slot, StoredEvent};
+
+mod evidence;
+mod review;
+pub use review::{Original, ReviewContext, Vocabulary};
+mod tags;
+mod task;
+pub use evidence::{IndexHit, SourceEvent};
+pub use tags::{FactKind, FactTag, InferredTags};
+pub use task::{Hint, TaskContext, TaskPatch, TaskState};

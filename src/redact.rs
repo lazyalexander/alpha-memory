@@ -15,6 +15,10 @@ static RULES: LazyLock<Vec<Rule>> = LazyLock::new(|| {
             r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----",
             REDACTED,
         ),
+        (
+            r#"(?i)("(?:api[_-]?key|secret|password|token)"\s*:\s*)"(?:\\.|[^"\\])*""#,
+            r#"${1}"[REDACTED]""#,
+        ),
         (r"(?i)bearer\s+[A-Za-z0-9\-._~+/]+=*", "Bearer [REDACTED]"),
         (r"\bsk-[A-Za-z0-9]{16,}\b", REDACTED),
         (r"\bAKIA[0-9A-Z]{16}\b", REDACTED),
@@ -69,6 +73,13 @@ mod tests {
         assert!(!text.contains("sk-abc"));
         assert!(!text.contains("AKIAIOSFODNN7EXAMPLE"));
         assert!(text.contains("[REDACTED]"));
+    }
+
+    #[test]
+    fn redacts_quoted_tool_arguments() {
+        let (clean, changed) = redact(r#"{"password":"with spaces and \"quotes\"","count":2}"#);
+        assert!(changed);
+        assert_eq!(clean, r#"{"password":"[REDACTED]","count":2}"#);
     }
 
     #[test]

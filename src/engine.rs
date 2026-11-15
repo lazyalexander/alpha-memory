@@ -126,7 +126,6 @@ impl Engine {
             return Err(message("an event is either a failure or a decision"));
         }
         input.config_key = blank_to_none(input.config_key);
-        input.config_value = blank_to_none(input.config_value);
         input.stage = blank_to_none(input.stage);
         input.topic = blank_to_none(input.topic);
         input.event_kind = blank_to_none(input.event_kind);
@@ -331,6 +330,35 @@ impl Engine {
         )
     }
 
+    pub fn capture(
+        &self,
+        session: &str,
+        kind: &str,
+        interaction: Option<&str>,
+        body: &str,
+    ) -> Result<Vec<i64>> {
+        if kind.is_empty()
+            || kind.len() > 256
+            || interaction.is_some_and(|id| id.is_empty() || id.len() > 256)
+        {
+            return Err(message("invalid capture kind or interaction ID"));
+        }
+        let (text, redacted) = redact(body);
+        store::capture(
+            &self.workspace,
+            session,
+            kind,
+            interaction,
+            &text,
+            redacted,
+            MAX_TEXT,
+        )
+    }
+
+    pub fn reflect_pending(&self, session: &str) -> Result<Vec<MidTerm>> {
+        store::reflect_pending(&self.workspace, session)
+    }
+
     pub fn add_preference(&self, text: &str) -> Result<Note> {
         self.add_note("preference", text)
     }
@@ -443,7 +471,7 @@ fn split_tail(events: Vec<StoredEvent>) -> (Vec<StoredEvent>, Vec<StoredEvent>) 
     (decisions, failures)
 }
 
-fn structural_mid_body(events: &[StoredEvent]) -> String {
+pub(crate) fn structural_mid_body(events: &[StoredEvent]) -> String {
     let mut counts = BTreeMap::new();
     for event in events {
         let label = event.kind.map(Kind::as_str).unwrap_or("log");
