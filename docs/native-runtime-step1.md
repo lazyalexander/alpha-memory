@@ -83,3 +83,7 @@ explicitly writable ledger per study; it does not add general multi-session
 argument edges or distributed transactions. A 9/10 smoke cannot substitute for
 those experiments. See the [English plan](development-plan.md) or
 [中文计划](development-plan.zh-CN.md).
+
+Subsequent failure hardening, repeatable three-process acceptance and seeds
+43/44 are documented in the [maturity report](step1-maturity.md) /
+[中文报告](step1-maturity.zh-CN.md). The original smoke above remains unchanged.

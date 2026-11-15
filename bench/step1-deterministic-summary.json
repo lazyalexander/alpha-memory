@@ -1,0 +1,205 @@
+{
+  "kind": "deterministic step-1 engineering acceptance; no model calls",
+  "binary_sha256": "51e9242689f6a396aef84e491216b37003d251c7b98d32063c303cc13bb912f1",
+  "source_hashes": {
+    "native_acceptance.py": "2c39f19da6f707ef34f06a7cbc4ad3fc924470e922577eeb37566ebab654f492",
+    "native_runtime.py": "02fe8cce3bc1fbf8f168d90ec21408fe676fe3e790480e71d44abf1fa1b0f82c",
+    "native_audit.py": "8673ee8830024bbfd8709bbe641410426b2ff9001d00c9aeacddabed1bf7e38b",
+    "research_memory.py": "15360bb620a17feb1d3a27b2f4e016ac4c26efa0746376920626b042e533d44e",
+    "research_model.py": "e8be431980b93bed87e59fb102601140ada325cd519e6f75e1e050d2243385b9"
+  },
+  "python": "3.15.2",
+  "rounds": 3,
+  "scenarios": [
+    {
+      "scenario": "revision",
+      "round": 1,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified",
+        "key@2": "verified",
+        "cache@2": "verified",
+        "release@2": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 25
+        }
+      }
+    },
+    {
+      "scenario": "stale-export",
+      "round": 1,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 7
+        }
+      }
+    },
+    {
+      "scenario": "revision",
+      "round": 2,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified",
+        "key@2": "verified",
+        "cache@2": "verified",
+        "release@2": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 25
+        }
+      }
+    },
+    {
+      "scenario": "stale-export",
+      "round": 2,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 7
+        }
+      }
+    },
+    {
+      "scenario": "revision",
+      "round": 3,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified",
+        "key@2": "verified",
+        "cache@2": "verified",
+        "release@2": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 25
+        }
+      }
+    },
+    {
+      "scenario": "stale-export",
+      "round": 3,
+      "passed": true,
+      "separate_processes": true,
+      "stable_old_versions": true,
+      "final_states": {
+        "key@1": "refuted",
+        "cache@1": "invalidated",
+        "release@1": "invalidated",
+        "commutes@1": "verified"
+      },
+      "native_audit": {
+        "checks": {
+          "native_observations_bound_to_cli_receipts": true,
+          "native_observations_match_independent_oracle": true,
+          "native_versions_durable": true,
+          "native_export_restore_durable": true,
+          "native_receipts_replay_from_empty_database": true,
+          "native_binary_matches_manifest": true,
+          "native_receipt_sequence_valid": true
+        },
+        "passed": true,
+        "calls": {
+          "a": 23,
+          "b": 10,
+          "c": 7
+        }
+      }
+    }
+  ],
+  "passed": true
+}

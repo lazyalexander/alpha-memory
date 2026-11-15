@@ -108,3 +108,12 @@ The next delivery connects live inference to the Rust backend, rather than a
 post-run projection. It passes 39 Rust tests and 60 research tests and completed
 a three-process Qwen smoke at 9/10 with live receipts audited. See
 [step 1 acceptance](../docs/native-runtime-step1.md); ablations remain pending.
+
+Step 1 hardening now passes 66 research tests, six repeated deterministic
+process scenarios and audited Qwen 43/44 regressions (both 9/10, three phases
+complete). See [maturity](../docs/step1-maturity.md) for evidence and limits.
+
+The latest step-1 hardening passes 68 research tests, six deterministic
+three-process scenarios and audited 43/44 regressions. See
+[step-1 maturity](../docs/step1-maturity.md) / [中文成熟度](../docs/step1-maturity.zh-CN.md).
+Historical scores above remain separate from this delivery.

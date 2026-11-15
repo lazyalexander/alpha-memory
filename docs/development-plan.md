@@ -79,3 +79,5 @@ Synthetic fixtures, tests, runner code and sanitized summaries may be committed.
 Raw conversations, database files, local paths, model weights and server logs
 remain in ignored local run directories. Core and research results are reported
 separately. Each delivery records completed checks, failures and remaining work.
+
+Step 1 now has repeatable process acceptance and 43/44 model regressions; see the [maturity report](step1-maturity.md). It remains a research prototype.

@@ -1,0 +1,275 @@
+{
+  "condition": "step-1 engineering regression, not held-out memory effectiveness",
+  "preregistered_seeds": [
+    43,
+    44
+  ],
+  "source_hashes": {
+    "native_runtime.py": "02fe8cce3bc1fbf8f168d90ec21408fe676fe3e790480e71d44abf1fa1b0f82c",
+    "native_audit.py": "8673ee8830024bbfd8709bbe641410426b2ff9001d00c9aeacddabed1bf7e38b",
+    "research_memory.py": "15360bb620a17feb1d3a27b2f4e016ac4c26efa0746376920626b042e533d44e",
+    "research_model.py": "e8be431980b93bed87e59fb102601140ada325cd519e6f75e1e050d2243385b9"
+  },
+  "rows": [
+    {
+      "seed": 43,
+      "runner_exit_code": 1,
+      "runner_wall_seconds": 115.10824062500615,
+      "native_cli_wall_seconds": 0.5314987938909326,
+      "database_bytes": 1241088,
+      "summary": {
+        "condition": "single-seed local self-test; not a general benchmark score",
+        "model": "qwen3-30b-a3b-instruct-2507-q8_0.gguf",
+        "model_sha256": "66cbfc7624628ca4725a6a0581b95f2155aa6aa073a6ed4ff8d158794ee8fee3",
+        "binary_sha256": "51e9242689f6a396aef84e491216b37003d251c7b98d32063c303cc13bb912f1",
+        "seed": 43,
+        "tool_feedback_version": "tool-feedback/v2",
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens_per_call": 1024,
+        "checks": {
+          "model_written_first_handoff_is_correct": true,
+          "reviewer_resumed_and_read_original_key": true,
+          "counterexample_proposed_before_checker_revealed_one": false,
+          "model_distinguishes_refutation_from_dependent_invalidation": true,
+          "followup_resumed_and_read_old_key_evidence": true,
+          "followup_restores_old_invalidations_and_verifies_new_revision": true,
+          "model_judgments_match_replayed_evidence": true,
+          "requested_scope_and_implementation_preserved": true,
+          "three_fresh_processes_and_engine_sessions": true,
+          "all_phases_completed_without_truncation": true
+        },
+        "score": 9,
+        "conditions": 10,
+        "host_checks": {
+          "scope_checked_on_all_persisted_claims": true,
+          "handoff_states_match_replayed_evidence": true,
+          "verified_state_survives_both_handoffs": true
+        },
+        "phases": {
+          "a": {
+            "completed": true,
+            "active_reads": 1,
+            "reads_after_refusal": 0,
+            "remaining_actions": 2,
+            "authorization_refusals": 0,
+            "actions": 8,
+            "tool_errors": 0,
+            "failed": false,
+            "citation_refusals": 0,
+            "resume_refusals": 0,
+            "revision_read_refusals": 0
+          },
+          "b": {
+            "completed": true,
+            "active_reads": 2,
+            "reads_after_refusal": 0,
+            "remaining_actions": 6,
+            "authorization_refusals": 0,
+            "actions": 6,
+            "tool_errors": 0,
+            "failed": false,
+            "citation_refusals": 0,
+            "resume_refusals": 0,
+            "revision_read_refusals": 0
+          },
+          "c": {
+            "completed": true,
+            "active_reads": 2,
+            "reads_after_refusal": 2,
+            "remaining_actions": 2,
+            "authorization_refusals": 0,
+            "actions": 12,
+            "tool_errors": 2,
+            "failed": false,
+            "citation_refusals": 0,
+            "resume_refusals": 0,
+            "revision_read_refusals": 2
+          }
+        },
+        "completed_sessions": 3,
+        "calls": 26,
+        "tokens": {
+          "prompt_tokens": 119510,
+          "completion_tokens": 1190,
+          "total_tokens": 120700
+        },
+        "wall_seconds": 101.37868845608318,
+        "trace_audit_passed": true,
+        "core_states": {
+          "a": {
+            "key@1": "sampled",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified"
+          },
+          "b": {
+            "key@1": "refuted",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified"
+          },
+          "c": {
+            "key@1": "refuted",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified",
+            "key@2": "verified",
+            "cache@2": "supported",
+            "release@2": "supported"
+          }
+        },
+        "core_projection_audit_passed": null,
+        "core_audit_scope": "native CLI receipts and independent per-action oracle during the actual run; no post-run projection",
+        "backend": "native",
+        "native_runtime_audit": {
+          "checks": {
+            "native_observations_bound_to_cli_receipts": true,
+            "native_observations_match_independent_oracle": true,
+            "native_versions_durable": true,
+            "native_export_restore_durable": true,
+            "native_receipts_replay_from_empty_database": true,
+            "native_binary_matches_manifest": true,
+            "native_receipt_sequence_valid": true
+          },
+          "passed": true,
+          "calls": {
+            "a": 24,
+            "b": 14,
+            "c": 26
+          }
+        }
+      }
+    },
+    {
+      "seed": 44,
+      "runner_exit_code": 1,
+      "runner_wall_seconds": 202.0262077920197,
+      "native_cli_wall_seconds": 0.7310550889524166,
+      "database_bytes": 1241088,
+      "summary": {
+        "condition": "single-seed local self-test; not a general benchmark score",
+        "model": "qwen3-30b-a3b-instruct-2507-q8_0.gguf",
+        "model_sha256": "66cbfc7624628ca4725a6a0581b95f2155aa6aa073a6ed4ff8d158794ee8fee3",
+        "binary_sha256": "51e9242689f6a396aef84e491216b37003d251c7b98d32063c303cc13bb912f1",
+        "seed": 44,
+        "tool_feedback_version": "tool-feedback/v2",
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "max_tokens_per_call": 1024,
+        "checks": {
+          "model_written_first_handoff_is_correct": true,
+          "reviewer_resumed_and_read_original_key": true,
+          "counterexample_proposed_before_checker_revealed_one": false,
+          "model_distinguishes_refutation_from_dependent_invalidation": true,
+          "followup_resumed_and_read_old_key_evidence": true,
+          "followup_restores_old_invalidations_and_verifies_new_revision": true,
+          "model_judgments_match_replayed_evidence": true,
+          "requested_scope_and_implementation_preserved": true,
+          "three_fresh_processes_and_engine_sessions": true,
+          "all_phases_completed_without_truncation": true
+        },
+        "score": 9,
+        "conditions": 10,
+        "host_checks": {
+          "scope_checked_on_all_persisted_claims": true,
+          "handoff_states_match_replayed_evidence": true,
+          "verified_state_survives_both_handoffs": true
+        },
+        "phases": {
+          "a": {
+            "completed": true,
+            "active_reads": 0,
+            "reads_after_refusal": 0,
+            "remaining_actions": 1,
+            "authorization_refusals": 0,
+            "actions": 9,
+            "tool_errors": 2,
+            "failed": false,
+            "citation_refusals": 0,
+            "resume_refusals": 0,
+            "revision_read_refusals": 0
+          },
+          "b": {
+            "completed": true,
+            "active_reads": 4,
+            "reads_after_refusal": 0,
+            "remaining_actions": 2,
+            "authorization_refusals": 0,
+            "actions": 10,
+            "tool_errors": 2,
+            "failed": false,
+            "citation_refusals": 1,
+            "resume_refusals": 0,
+            "revision_read_refusals": 0
+          },
+          "c": {
+            "completed": true,
+            "active_reads": 2,
+            "reads_after_refusal": 2,
+            "remaining_actions": 2,
+            "authorization_refusals": 0,
+            "actions": 12,
+            "tool_errors": 2,
+            "failed": false,
+            "citation_refusals": 0,
+            "resume_refusals": 0,
+            "revision_read_refusals": 2
+          }
+        },
+        "completed_sessions": 3,
+        "calls": 31,
+        "tokens": {
+          "prompt_tokens": 149832,
+          "completion_tokens": 1698,
+          "total_tokens": 151530
+        },
+        "wall_seconds": 187.32567275202018,
+        "trace_audit_passed": true,
+        "core_states": {
+          "a": {
+            "key@1": "sampled",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified"
+          },
+          "b": {
+            "key@1": "refuted",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified"
+          },
+          "c": {
+            "key@1": "refuted",
+            "cache@1": "unsupported",
+            "release@1": "unsupported",
+            "commutes@1": "verified",
+            "key@2": "verified",
+            "cache@2": "supported",
+            "release@2": "supported"
+          }
+        },
+        "core_projection_audit_passed": null,
+        "core_audit_scope": "native CLI receipts and independent per-action oracle during the actual run; no post-run projection",
+        "backend": "native",
+        "native_runtime_audit": {
+          "checks": {
+            "native_observations_bound_to_cli_receipts": true,
+            "native_observations_match_independent_oracle": true,
+            "native_versions_durable": true,
+            "native_export_restore_durable": true,
+            "native_receipts_replay_from_empty_database": true,
+            "native_binary_matches_manifest": true,
+            "native_receipt_sequence_valid": true
+          },
+          "passed": true,
+          "calls": {
+            "a": 22,
+            "b": 18,
+            "c": 26
+          }
+        }
+      }
+    }
+  ]
+}
