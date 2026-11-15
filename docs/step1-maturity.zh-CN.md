@@ -83,7 +83,8 @@ python3 bench/native_acceptance.py run \
 现在可以依靠该研究宿主开展受控实验，并用明确的失败信号排查问题。
 仍仅支持每项研究一个显式可写账本；没有一般化的多账本合并、跨库原子提交、
 崩溃后自动续写、长时间并发运行或跨宿主版本检查器兼容性验收。
-研究宿主远端尚未配置，代码在本地 dev；核心 dev 上有计划、接口和脱敏报告。
+研究宿主代码现已推送至私有的 [alpha-memory-research/dev](https://github.com/lazyalexander/alpha-memory-research/tree/dev)；
+核心 [alpha-memory/dev](https://github.com/lazyalexander/alpha-memory/tree/dev) 上有计划、接口和脱敏报告。
 
 下一步进入计划中的四组消融，冻结本轮反馈、权限和评分规则；
 然后使用另行预注册的未见任务、种子和完整成本指标。

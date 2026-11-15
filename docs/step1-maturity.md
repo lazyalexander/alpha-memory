@@ -107,9 +107,10 @@ The host can now support controlled experiments with repeatable engineering
 acceptance and explicit failure signals. It still has one explicitly writable
 ledger per study, no general multi-ledger merge or cross-database atomic commit,
 no automatic interrupted-write recovery, and no long-running concurrency or
-cross-host-version checker-compatibility acceptance. The research repository has
-local dev commits and no configured remote; the core dev branch contains the
-plan, core interface and sanitized reports.
+cross-host-version checker-compatibility acceptance. Research code is now pushed to the private
+[alpha-memory-research/dev](https://github.com/lazyalexander/alpha-memory-research/tree/dev).
+The core [dev branch](https://github.com/lazyalexander/alpha-memory/tree/dev)
+contains the plan, core interface and sanitized reports.
 
 Proceed to the four-way ablation while freezing feedback, permissions and scoring,
 then preregister unseen tasks/seeds and include full costs. Until those studies
