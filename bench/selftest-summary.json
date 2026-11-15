@@ -1,0 +1,104 @@
+{
+  "condition": "single-seed local self-test; not a general benchmark score",
+  "model": "DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf",
+  "model_sha256": "bed9b0f551f5b95bf9da5888a48f0f87c37ad6b72519c4cbd775f54ac0b9fc62",
+  "binary_sha256": "cdb55a4d2de22b26eb7f7e9f88c02ad65061b836b151c8a390ad5aef8bfc0175",
+  "seed": 42,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "max_tokens_per_call": 1024,
+  "checks": {
+    "model_written_first_handoff_is_correct": true,
+    "reviewer_resumed_and_read_original_key": true,
+    "counterexample_proposed_before_checker_revealed_one": true,
+    "model_distinguishes_refutation_from_dependent_invalidation": true,
+    "followup_resumed_and_read_old_key_evidence": true,
+    "followup_restores_old_invalidations_and_verifies_new_revision": true,
+    "model_judgments_match_replayed_evidence": true,
+    "requested_scope_and_implementation_preserved": true,
+    "three_fresh_processes_and_engine_sessions": true,
+    "all_phases_completed_without_truncation": true
+  },
+  "score": 10,
+  "conditions": 10,
+  "host_checks": {
+    "scope_checked_on_all_persisted_claims": true,
+    "handoff_states_match_replayed_evidence": true,
+    "verified_state_survives_both_handoffs": true
+  },
+  "phases": {
+    "a": {
+      "completed": true,
+      "active_reads": 1,
+      "reads_after_refusal": 0,
+      "remaining_actions": 0,
+      "authorization_refusals": 0,
+      "actions": 10,
+      "tool_errors": 2,
+      "failed": false,
+      "citation_refusals": 0,
+      "resume_refusals": 0,
+      "revision_read_refusals": 0
+    },
+    "b": {
+      "completed": true,
+      "active_reads": 1,
+      "reads_after_refusal": 0,
+      "remaining_actions": 0,
+      "authorization_refusals": 0,
+      "actions": 12,
+      "tool_errors": 8,
+      "failed": false,
+      "citation_refusals": 6,
+      "resume_refusals": 1,
+      "revision_read_refusals": 0
+    },
+    "c": {
+      "completed": true,
+      "active_reads": 0,
+      "reads_after_refusal": 3,
+      "remaining_actions": 0,
+      "authorization_refusals": 0,
+      "actions": 14,
+      "tool_errors": 5,
+      "failed": false,
+      "citation_refusals": 0,
+      "resume_refusals": 1,
+      "revision_read_refusals": 3
+    }
+  },
+  "completed_sessions": 3,
+  "calls": 36,
+  "tokens": {
+    "prompt_tokens": 133764,
+    "completion_tokens": 15097,
+    "total_tokens": 148861
+  },
+  "wall_seconds": 1415.7264533780108,
+  "trace_audit_passed": true,
+  "core_states": {
+    "a": {
+      "key@1": "sampled",
+      "cache@1": "unsupported",
+      "release@1": "unsupported",
+      "commutes@1": "verified"
+    },
+    "b": {
+      "key@1": "refuted",
+      "cache@1": "unsupported",
+      "release@1": "unsupported",
+      "commutes@1": "verified"
+    },
+    "c": {
+      "key@1": "refuted",
+      "cache@1": "unsupported",
+      "release@1": "unsupported",
+      "commutes@1": "verified",
+      "key@2": "verified",
+      "cache@2": "supported",
+      "release@2": "supported"
+    }
+  },
+  "core_projection_audit_passed": true,
+  "core_audit_scope": "authorized original records re-read; native CLI projection and handoff; post-run audit"
+}

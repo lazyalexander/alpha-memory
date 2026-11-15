@@ -1,0 +1,31 @@
+{
+  "baseline_revision": "ba5a19e",
+  "candidate_base": "ba5a19e",
+  "seed": 42,
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "architecture": "arm64",
+  "sqlite_journal_mode": "WAL",
+  "synchronous": "SQLite default (FULL)",
+  "build_profile": "release",
+  "baseline_binary_sha256": "a4bcffcaea36c4be91d29f4c30f1a99642a821e05a32177b0ec1f1fea787dd7a",
+  "candidate_binary_sha256": "cdb55a4d2de22b26eb7f7e9f88c02ad65061b836b151c8a390ad5aef8bfc0175",
+  "source_digests": {
+    "src/claim_schema.sql": "f6eeeacab66f9479350870489dc9007576b05db4a93b99485d2b27dad94d7143",
+    "src/claims.rs": "f568631ce5b439663fad6869a0d8f7a4666aba8472a7099345700381087cac8b",
+    "src/classify.rs": "a71b091e3b2104e4207b342f79e77532d48b9c8a9c3cf4735f13ea51dd3c47df",
+    "src/engine.rs": "561d77edc6833acd2429a64abca549295cefb6b9778e28f4761f3317b7a420b3",
+    "src/error.rs": "a9597b3e367b96c4586084813d0cd0da9d0bcdbea0fe1f9aae320b059cea0128",
+    "src/evidence.rs": "cb39064fc92b03dcc8a4bbaa80834a94e7a65e2a38b49ab21b2497abe2d88d53",
+    "src/lib.rs": "9290f38a3f7ce46f3a41ae137d9d55303bc09df743a3b2c1c149a71916105b4d",
+    "src/main.rs": "4939d316525c9195f199a9771ce5cf02815039112ffcf0005a35c5abe2114ead",
+    "src/redact.rs": "89beb291aabf7401795d5a46dda1a7b54939bac1a2f5dce665b9321741711cfd",
+    "src/review.rs": "1e4302835062d8852e2c640692b3ab753a7d856096a3d63db7dd9eb9840bc2a7",
+    "src/store.rs": "93d657f8f28877b8a21349ea33cc67feeb8c5422c793730ee4134b6f637dec08",
+    "src/tags.rs": "ea7692d7cdff2c94863631d3873f591605f6b0c5a971206f3c67cb30d7e7fc0d",
+    "src/task.rs": "1f77887ce5c1b01a5fe1b22e3d2a74c2722d7763f32020681748ccc58c009d3d",
+    "src/task_schema.sql": "17a0a74e4707f45487e4e2bff61be10b27b65e358a382ad61f5c6008c18f9468"
+  },
+  "chip": "Apple M5 Max",
+  "memory_bytes": 68719476736,
+  "machine_model": "Mac17,6"
+}

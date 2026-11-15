@@ -99,3 +99,5 @@ alpha-memory source --session demo --event 1
 `reflect pending` 只处理同一任务中尚未被覆盖的连续日志区间。已提升或已被取代的条目所覆盖的区间，也视为已覆盖。
 
 使用 `cargo build --locked` 构建引擎，使用 `cargo test --locked` 运行引擎测试。
+
+[结论版本、检查证据、多条论证与授权交接恢复](docs/claims.md)

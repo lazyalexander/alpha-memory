@@ -26,3 +26,6 @@ mod task;
 pub use evidence::{IndexHit, SourceEvent};
 pub use tags::{FactKind, FactTag, InferredTags};
 pub use task::{Hint, TaskContext, TaskPatch, TaskState};
+
+mod claims;
+pub use claims::*;

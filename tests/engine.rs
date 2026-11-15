@@ -427,7 +427,7 @@ fn search_reads_originals_after_updates_and_before_lazy_upgrade() {
     // Emulate the previous schema, which has all the original event and slot rows.
     let db = ws.path().join(".alpha-memory/sessions/s/store.sqlite");
     let conn = Connection::open(&db).unwrap();
-    conn.execute_batch("DROP TABLE event_fact_tags; DROP TABLE user_turns; DROP TABLE task_compactions; DROP TRIGGER index_appended_event; DROP TABLE event_index; DROP TABLE tasks; DROP TABLE task_hints; PRAGMA user_version=0;").unwrap();
+    conn.execute_batch("DROP TABLE claim_requests; DROP TABLE arguments; DROP TABLE checks; DROP TABLE claims; DROP TABLE event_fact_tags; DROP TABLE user_turns; DROP TABLE task_compactions; DROP TRIGGER index_appended_event; DROP TABLE event_index; DROP TABLE tasks; DROP TABLE task_hints; PRAGMA user_version=0;").unwrap();
     assert!(eng.task_context("s", None).unwrap().task.is_none());
     assert_eq!(
         eng.evidence_index("s", "旧版探针", None, None, 6).unwrap()[0].event_id,
@@ -693,7 +693,7 @@ fn old_handoffs_have_no_invented_compaction_turn() {
     .unwrap();
     let db =
         Connection::open(ws.path().join(".alpha-memory/sessions/legacy/store.sqlite")).unwrap();
-    db.execute_batch("DROP TABLE event_fact_tags; DROP TABLE user_turns; DROP TABLE task_compactions; PRAGMA user_version=1;")
+    db.execute_batch("DROP TABLE claim_requests; DROP TABLE arguments; DROP TABLE checks; DROP TABLE claims; DROP TABLE event_fact_tags; DROP TABLE user_turns; DROP TABLE task_compactions; PRAGMA user_version=1;")
         .unwrap();
     let old = e.task_context("legacy", None).unwrap();
     assert_eq!(old.task.unwrap().goal, "persist");
@@ -715,7 +715,7 @@ fn inferred_facts_are_checked_against_their_capture_and_never_promoted() {
         .unwrap()[0];
     // A read of a v2 capture stays read-only. Its first tag write upgrades it.
     let db = Connection::open(ws.path().join(".alpha-memory/sessions/s/store.sqlite")).unwrap();
-    db.execute_batch("DROP TABLE event_fact_tags; PRAGMA user_version=2;")
+    db.execute_batch("DROP TABLE claim_requests; DROP TABLE arguments; DROP TABLE checks; DROP TABLE claims; DROP TABLE event_fact_tags; PRAGMA user_version=2;")
         .unwrap();
     let src = || eng.source("s", event, 0).unwrap().pop().unwrap();
     let raw = src().event.body;
@@ -824,7 +824,7 @@ fn review_uses_the_captured_question_boundary_and_keeps_untagged_counterevidence
             .join(".alpha-memory/sessions/review/store.sqlite"),
     )
     .unwrap();
-    db.execute_batch("DROP TABLE event_fact_tags; PRAGMA user_version=2;")
+    db.execute_batch("DROP TABLE claim_requests; DROP TABLE arguments; DROP TABLE checks; DROP TABLE claims; DROP TABLE event_fact_tags; PRAGMA user_version=2;")
         .unwrap();
     assert!(read().candidate_ids.is_empty());
     assert_eq!(read().originals.len(), 2);

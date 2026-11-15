@@ -684,7 +684,7 @@ pub fn list_notes(user_home: &Path, bucket: &str) -> Result<Vec<Note>> {
 // Migrate on the first write. Read-only callers can still inspect older sessions.
 pub(crate) fn open_session(path: &Path) -> Result<Connection> {
     let mut conn = open_db(path, SESSION_SCHEMA)?;
-    if conn.pragma_query_value(None, "user_version", |row| row.get::<_, i64>(0))? < 3 {
+    if conn.pragma_query_value(None, "user_version", |row| row.get::<_, i64>(0))? < 4 {
         let tx = conn.transaction_with_behavior(TransactionBehavior::Immediate)?;
         let version: i64 = tx.pragma_query_value(None, "user_version", |row| row.get(0))?;
         if version == 0 {
@@ -704,6 +704,9 @@ pub(crate) fn open_session(path: &Path) -> Result<Connection> {
                 extractor TEXT NOT NULL, facts TEXT NOT NULL
             ); PRAGMA user_version=3;",
             )?;
+        }
+        if version < 4 {
+            tx.execute_batch(include_str!("claim_schema.sql"))?;
         }
         tx.commit()?;
     }

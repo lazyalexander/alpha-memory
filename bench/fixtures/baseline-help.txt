@@ -1,0 +1,25 @@
+Session memory engine for coding-agent harnesses
+
+Usage: alpha-memory [OPTIONS] <COMMAND>
+
+Commands:
+  append          Append one interaction to a session log
+  capture         Capture a complete host text part from stdin. Redact before splitting large parts
+  tag             Attach inferred facts (JSON array on stdin) to one stored, redacted capture
+  context         Read the active task handoff and standing user notes (no history)
+  task            Select/resume a task and patch only the fields that changed
+  session-config  Look up one exact, scope-qualified key and its source event
+  index           Find candidate event ids in the session's redacted log
+  review-context  Find candidates and original evidence preceding a captured user question. Read the workspace vocabulary from stdin
+  source          Read a source event, optionally including nearby original events
+  recall          Build the recall pack for a session
+  reflect         Record a reflection the caller, or a structural placeholder, produced
+  user            Behavioral preferences and standing constraints in the user directory
+  log             Print the stored events for a session
+  help            Print this message or the help of the given subcommand(s)
+
+Options:
+      --workspace <WORKSPACE>  Workspace that owns session logs. Defaults to the current directory
+      --user-home <USER_HOME>  Directory for behavioral preferences and standing constraints
+  -h, --help                   Print help
+  -V, --version                Print version

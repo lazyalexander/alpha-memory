@@ -24,6 +24,23 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Immutable claim versions. Write commands read a typed JSON object from stdin.
+    Claim {
+        #[command(subcommand)]
+        command: ClaimCommand,
+    },
+    Check {
+        #[command(subcommand)]
+        command: CheckCommand,
+    },
+    Argument {
+        #[command(subcommand)]
+        command: ArgumentCommand,
+    },
+    Handoff {
+        #[command(subcommand)]
+        command: HandoffCommand,
+    },
     /// Append one interaction to a session log.
     Append {
         #[arg(long)]
@@ -179,6 +196,70 @@ enum Command {
 }
 
 #[derive(Subcommand)]
+enum ClaimCommand {
+    Add {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        request: String,
+    },
+    Show {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        version: i64,
+    },
+    Explain {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        version: i64,
+    },
+}
+#[derive(Subcommand)]
+enum CheckCommand {
+    Record {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        request: String,
+    },
+}
+#[derive(Subcommand)]
+enum ArgumentCommand {
+    Add {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        request: String,
+    },
+}
+#[derive(Subcommand)]
+enum HandoffCommand {
+    Export {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        request: String,
+        #[arg(long, value_delimiter = ',', required = true)]
+        versions: Vec<i64>,
+    },
+    Restore {
+        #[arg(long)]
+        session: String,
+        #[arg(long)]
+        request: String,
+        #[arg(long)]
+        source_session: String,
+        #[arg(long)]
+        event: i64,
+        /// Trusted host authorization; not read from the handoff.
+        #[arg(long, value_delimiter = ',')]
+        allow_source: Vec<String>,
+    },
+}
+
+#[derive(Subcommand)]
 enum ReflectCommand {
     /// Reflect only uncovered log spans, preserving task and period boundaries.
     Pending {
@@ -253,6 +334,55 @@ fn run() -> alpha_memory::Result<()> {
     };
     let engine = Engine::open(workspace, user_home)?;
     match cli.command {
+        Command::Claim { command } => match command {
+            ClaimCommand::Add { session, request } => print_json(&engine.claim_add(
+                &session,
+                &request,
+                serde_json::from_str(&read_body(Some("-".into()))?)?,
+            )?)?,
+            ClaimCommand::Show { session, version } => {
+                print_json(&engine.claim_show(&session, version)?)?
+            }
+            ClaimCommand::Explain { session, version } => {
+                print_json(&engine.claim_explain(&session, version)?)?
+            }
+        },
+        Command::Check {
+            command: CheckCommand::Record { session, request },
+        } => print_json(&engine.check_record(
+            &session,
+            &request,
+            serde_json::from_str(&read_body(Some("-".into()))?)?,
+        )?)?,
+        Command::Argument {
+            command: ArgumentCommand::Add { session, request },
+        } => print_json(&engine.argument_add(
+            &session,
+            &request,
+            serde_json::from_str(&read_body(Some("-".into()))?)?,
+        )?)?,
+        Command::Handoff { command } => match command {
+            HandoffCommand::Export {
+                session,
+                request,
+                versions,
+            } => print_json(&engine.handoff_export(&session, &request, &versions)?)?,
+            HandoffCommand::Restore {
+                session,
+                request,
+                source_session,
+                event,
+                allow_source,
+            } => print_json(&engine.handoff_restore(
+                &session,
+                &request,
+                alpha_memory::HandoffRef {
+                    source_session,
+                    event,
+                },
+                &allow_source,
+            )?)?,
+        },
         Command::Append {
             session,
             task,
