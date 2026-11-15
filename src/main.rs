@@ -212,8 +212,8 @@ enum ClaimCommand {
     Explain {
         #[arg(long)]
         session: String,
-        #[arg(long)]
-        version: i64,
+        #[arg(long, required = true, value_delimiter = ',')]
+        version: Vec<i64>,
     },
 }
 #[derive(Subcommand)]
@@ -344,7 +344,7 @@ fn run() -> alpha_memory::Result<()> {
                 print_json(&engine.claim_show(&session, version)?)?
             }
             ClaimCommand::Explain { session, version } => {
-                print_json(&engine.claim_explain(&session, version)?)?
+                print_json(&engine.claims_explain(&session, &version)?)?
             }
         },
         Command::Check {

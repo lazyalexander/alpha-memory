@@ -101,3 +101,5 @@ alpha-memory source --session demo --event 1
 使用 `cargo build --locked` 构建引擎，使用 `cargo test --locked` 运行引擎测试。
 
 [结论版本、检查证据、多条论证与授权交接恢复](docs/claims.md)
+
+[证据记忆验证开发计划](docs/development-plan.zh-CN.md)

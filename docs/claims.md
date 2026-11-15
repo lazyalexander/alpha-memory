@@ -113,3 +113,10 @@ nonportable writable-schema virtual-table dump.
 See [acceptance report](../bench/ACCEPTANCE.md) for measured results and pending
 external integration work. Raw runs and databases belong in ignored
 `bench/runs/`; only synthetic fixtures and sanitized summaries are publishable.
+
+`claim explain --version 2,6` (or repeated `--version`) explains several roots
+in one read transaction. The Rust equivalent is `claims_explain(session, &[2,6])`;
+`claim_explain(session, version)` keeps its existing single-root behavior.
+
+See the [development plan](development-plan.md) for the live-runtime delivery
+and subsequent controlled ablations.

@@ -106,3 +106,5 @@ Promoted and superseded ranges remain covered.
 Build with `cargo build --locked` and run the engine tests with `cargo test --locked`.
 
 [Versioned claims, checker evidence, arguments and authorized handoff recovery](docs/claims.md)
+
+[Evidence-memory validation development plan](docs/development-plan.md)

@@ -17,7 +17,8 @@ def main():
     import research_memory as kernel
     manifest=json.loads((args.run/'manifest.json').read_text())
     report=json.loads((args.run/'report.json').read_text())
-    core=audit_run(args.run,args.binary)
+    native_backend=manifest.get('backend')=='native'
+    core={} if native_backend else audit_run(args.run,args.binary)
     trace_audit=audit(args.run)
     kernel.write_json(args.run/'trace-audit.json',trace_audit)
     scored=metrics(args.run)
@@ -47,6 +48,17 @@ def main():
         'core_states':{phase:data['states'] for phase,data in core.items()},
         'core_projection_audit_passed':bool(core) and all(not data['mismatches'] for data in core.values()),
         'core_audit_scope':'authorized original records re-read; native CLI projection and handoff; post-run audit'}
+    result['backend']=manifest.get('backend','legacy')
+    if native_backend:
+        result['native_runtime_audit']=trace_audit.get('native_runtime_audit')
+        result['core_projection_audit_passed']=None
+        result['core_audit_scope']='native CLI receipts and independent per-action oracle during the actual run; no post-run projection'
+        result['core_states']={}
+        for phase in 'abc':
+            path=args.run/f'actions-{phase}.json'
+            if path.exists():
+                successful=[a['result'] for a in json.loads(path.read_text()) if 'state_basis' in a['result']]
+                if successful:result['core_states'][phase]=successful[-1]['state_basis']['native_states']
     args.output.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
 if __name__=='__main__':main()

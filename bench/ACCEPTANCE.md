@@ -103,3 +103,8 @@ A subsequent feedback treatment completed all three Qwen sessions and scored
 9/10, with trace and native audits passing. See [the feedback report](QWEN_FEEDBACK.md).
 The research feedback regression suite now has 52 passing tests. This is a
 single-seed development comparison; multi-seed acceptance remains pending.
+
+The next delivery connects live inference to the Rust backend, rather than a
+post-run projection. It passes 39 Rust tests and 60 research tests and completed
+a three-process Qwen smoke at 9/10 with live receipts audited. See
+[step 1 acceptance](../docs/native-runtime-step1.md); ablations remain pending.

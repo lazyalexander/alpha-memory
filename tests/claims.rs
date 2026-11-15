@@ -461,3 +461,22 @@ fn argument_and_export_retries_are_exact_and_partial_premises_do_not_prove() {
         .unwrap();
     assert_eq!(restored.changes.len(), 2);
 }
+
+#[test]
+fn batch_explanations_include_independent_roots_and_keep_original_versions() {
+    let (_dir, e) = setup();
+    let a = add(&e, "a");
+    let u = add(&e, "u");
+    support(&e, a, "sa");
+    support(&e, u, "su");
+    let graph = e.claims_explain("s", &[a, u]).unwrap();
+    assert_eq!(graph.roots, vec![a, u]);
+    assert_eq!(graph.states.len(), 2);
+    assert_eq!(graph.states[&a].status, ClaimStatus::Verified);
+    assert_eq!(graph.states[&u].status, ClaimStatus::Verified);
+    refute(&e, a, "ra");
+    let graph = e.claims_explain("s", &[a, u]).unwrap();
+    assert_eq!(graph.states[&a].status, ClaimStatus::Refuted);
+    assert_eq!(graph.states[&u].status, ClaimStatus::Verified);
+    assert!(e.claims_explain("s", &[]).is_err());
+}

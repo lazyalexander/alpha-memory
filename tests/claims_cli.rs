@@ -245,4 +245,17 @@ fn cli_independent_arguments_preserve_the_surviving_basis() {
         );
         assert_eq!(graph["states"][&d]["status"], expected);
     }
+    let roots = format!("{},{}", ids["a"], ids["d"]);
+    let graph = run(
+        &dir,
+        &["claim", "explain", "--session", "s", "--version", &roots],
+        Value::Null,
+        true,
+    );
+    assert_eq!(graph["roots"].as_array().unwrap().len(), 2);
+    assert_eq!(graph["states"][ids["a"].to_string()]["status"], "refuted");
+    assert_eq!(
+        graph["states"][ids["d"].to_string()]["status"],
+        "unsupported"
+    );
 }

@@ -498,10 +498,15 @@ impl Engine {
         view(&tx, version)
     }
     pub fn claim_explain(&self, session: &str, version: i64) -> Result<ClaimGraph> {
+        self.claims_explain(session, &[version])
+    }
+
+    /// Explain several roots in one consistent read transaction.
+    pub fn claims_explain(&self, session: &str, versions: &[i64]) -> Result<ClaimGraph> {
         let mut conn = store::read_session(self.workspace(), session)?
             .ok_or_else(|| message("missing source session"))?;
         let tx = conn.transaction()?;
-        graph(&tx, &[version])
+        graph(&tx, versions)
     }
     pub fn handoff_export(
         &self,
