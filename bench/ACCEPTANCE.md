@@ -85,8 +85,9 @@ Qwen results must be a separately labeled model condition, not silently passed
 through the DeepSeek historical control. Model identity, non-thinking template,
 output budget and sampling policy must be frozen before the first scored run.
 A subsequent local DeepSeek seed-42 run is documented in `SELFTEST.md`.
-Its trace and core-projection audits passed. The two additional seeds, held-out
-task and Qwen condition remain pending.
+Its trace and core-projection audits passed. The two additional DeepSeek seeds and held-out task remain pending.
+A subsequent Qwen seed-42 run failed at its first handoff because of an extra
+request field; see [the Qwen self-test report](QWEN_SELFTEST.md).
 
 ## Version-one boundaries
 
@@ -97,3 +98,8 @@ There is no atomic multi-source bundle operation in this version. Hosts route
 later reads/revisions to their owning session. These boundaries are documented
 in `docs/claims.md` and must be considered before declaring broader host
 integration complete. No commit, push or release was performed.
+
+A subsequent feedback treatment completed all three Qwen sessions and scored
+9/10, with trace and native audits passing. See [the feedback report](QWEN_FEEDBACK.md).
+The research feedback regression suite now has 52 passing tests. This is a
+single-seed development comparison; multi-seed acceptance remains pending.

@@ -36,7 +36,7 @@ def main():
             data['revision_read_refusals']=sum('revision not written' in e for e in errors)
     result={'condition':'single-seed local self-test; not a general benchmark score',
         'model':Path(manifest['model_file']).name,'model_sha256':manifest['model_sha256'],
-        'binary_sha256':manifest['binary_sha256'],'seed':manifest['seed'],
+        'binary_sha256':manifest['binary_sha256'],'seed':manifest['seed'],'tool_feedback_version':manifest.get('tool_feedback_version','legacy'),
         'temperature':manifest['temperature'],'top_p':manifest['top_p'],
         'max_tokens_per_call':manifest['max_tokens_per_call'],
         'checks':report['checks'],'score':sum(report['checks'].values()),'conditions':len(report['checks']),
