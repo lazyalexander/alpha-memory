@@ -1,0 +1,46 @@
+{
+  "schema": "step2-public-materials/v1",
+  "research_commit": "a852d04e4fa2460f53b971d61dd207c10cc5b625",
+  "hardware": {
+    "cpu": "Apple M5 Max",
+    "memory_bytes": 68719476736
+  },
+  "server_executable_sha256_observed_post_run": "3806b140070f86d9fb4ab6eb90bebeda995bcba313a17590d34d3332d406e951",
+  "acceptance": {
+    "result": "pass",
+    "test_count": 83,
+    "test_log_sha256": "c62fde2aad8eac475aab3bc8e7f4eb7f7087befac45258fa1f1b646bd2e88141",
+    "test_binary_sha256": "51e9242689f6a396aef84e491216b37003d251c7b98d32063c303cc13bb912f1"
+  },
+  "acceptance_test_sources_sha256": {
+    "test_ablation.py": "cd5fe40f6c14449d294b9fce2d0616b06d091f213bada0be1215f28df4d90895",
+    "test_ablation_report.py": "8f68cf3eb6e64c5455a73843b41c327c0979c772818f7e11a28ddff9ea72717f"
+  },
+  "local_private_evidence_index_sha256": "f6eb46afe8cd0f14158632793bb30c28857595b412252e12120aa4ac0796a778",
+  "raw_inventory": {
+    "step2-ablation-pilot": {
+      "files": 140,
+      "bytes": 11138205,
+      "pre_inference_protocol_copies_sha256": {
+        "protocol-zh-CN.md": "1ee5a01a3e04f946db3ac2e1ae59b2ce5042b253fc2b23681c8100eb0d388f58",
+        "protocol-en.md": "f58b54aa7ef82d282fade9beba744a38a0afce10c37dd267ea329c83f3abb645"
+      }
+    },
+    "step2-ablation-format-v2": {
+      "files": 384,
+      "bytes": 26558588,
+      "pre_inference_protocol_copies_sha256": {
+        "protocol-zh-CN.md": "6e59e39030afe357ff98cb8e0b1eb0d2ceab05a64bfc51cacc238e340b992eca",
+        "protocol-en.md": "ba624b50498cd639e8321acf57cfb189f2ae2b9e04d89515bc712617ac8a9bc9"
+      }
+    }
+  },
+  "public_summary_sha256": {
+    "initial": "cf6a3dc14629c462659757631d1a8a80d7c477a265e579e17a9edb58e33a7c20",
+    "revised": "d30492693c8d73fbc2f3efd06a1b83c5062a5b52812f4b2a1e2639341da96c12"
+  },
+  "limits": [
+    "Private evidence index and raw files remain local; public aggregates are not independent raw-data reproduction.",
+    "Protocol interpretation note was added after the second freeze; its original copy remains in private evidence."
+  ]
+}

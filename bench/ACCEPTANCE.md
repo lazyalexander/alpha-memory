@@ -117,3 +117,11 @@ The latest step-1 hardening passes 68 research tests, six deterministic
 three-process scenarios and audited 43/44 regressions. See
 [step-1 maturity](../docs/step1-maturity.md) / [中文成熟度](../docs/step1-maturity.zh-CN.md).
 Historical scores above remain separate from this delivery.
+
+Step 2 adds the A/B/C/D controlled pipeline and raises the research suite to
+83 passing tests. Two separate eight-cell development batches are retained and
+audited. The first has a common schema failure; the amended batch completes 5/8
+workflows, with 3/8 fully correct assessments and 6/8 final evidence states.
+See [the bilingual step-2 report](../docs/step2-report.md) /
+[中文](../docs/step2-report.zh-CN.md). These are known-task pilots; held-out
+validation and OpenCode 2.x integration remain pending.

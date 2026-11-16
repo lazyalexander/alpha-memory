@@ -108,3 +108,6 @@ Build with `cargo build --locked` and run the engine tests with `cargo test --lo
 [Versioned claims, checker evidence, arguments and authorized handoff recovery](docs/claims.md)
 
 [Evidence-memory validation development plan](docs/development-plan.md)
+
+[Controlled memory ablation pilot report](docs/step2-report.md) ·
+[第二步消融试运行报告](docs/step2-report.zh-CN.md)

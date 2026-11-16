@@ -1,0 +1,983 @@
+{
+  "schema": "ablation-public-summary/v1",
+  "development_pilot": true,
+  "held_out": false,
+  "task": "existing finite-pair task",
+  "seeds": [
+    43,
+    44
+  ],
+  "model": "Qwen3-30B-A3B-Instruct-2507 Q8_0",
+  "model_sha256": "66cbfc7624628ca4725a6a0581b95f2155aa6aa073a6ed4ff8d158794ee8fee3",
+  "engine_sha256": "51e9242689f6a396aef84e491216b37003d251c7b98d32063c303cc13bb912f1",
+  "preregister_sha256": "bfead0df1fdbd593c50961ffd02b886311c5d58084729ae45d280d7d7255e761",
+  "source_sha256": {
+    "ablation_experiment.py": "f80f2f23f727ba0f18a8578439fab14f4c73205a7864bce9ba7c55f7dc320a7b",
+    "ablation_runtime.py": "76bf56b8a24b7213f6719207c7e0b00f222f8d6d9b70f696add591bc06119f67",
+    "ablation_protocol.py": "0f305e136fbaaba2f38761c6096bcd63b0b7729ddf6b24b015748297f1acb12e",
+    "ablation_metrics.py": "cb983afd6a713b89673f50261c88e2c20eb588e25bcbf13b88081befd373fa68",
+    "ablation_audit.py": "7b0b0329d809d1b2e5988c82ba3a5ea81555894c1843a5214ac215b208d9269f",
+    "research_model.py": "e8be431980b93bed87e59fb102601140ada325cd519e6f75e1e050d2243385b9",
+    "research_memory.py": "15360bb620a17feb1d3a27b2f4e016ac4c26efa0746376920626b042e533d44e",
+    "research_handoff.py": "ce29a232e6af14ff1235f0867a9d2c792a07fc451bb9276c14acfdc61816f93b",
+    "native_runtime.py": "02fe8cce3bc1fbf8f168d90ec21408fe676fe3e790480e71d44abf1fa1b0f82c",
+    "native_audit.py": "2e9f6d0a9d3951985282f305e04cf04e617a1c91f6c87d558b787d2dec86f574"
+  },
+  "prompt_revision": "explicit-assessment-map/v2",
+  "sampling": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "max_tokens_per_call": 1024,
+    "phase_action_limits": {
+      "a": 10,
+      "b": 12,
+      "c": 14
+    },
+    "feedback": "tool-feedback/v2"
+  },
+  "profiles": {
+    "A": {
+      "prior_original_reads": false,
+      "computed_states": false,
+      "revision_read_gate": false
+    },
+    "B": {
+      "prior_original_reads": true,
+      "computed_states": false,
+      "revision_read_gate": false
+    },
+    "C": {
+      "prior_original_reads": true,
+      "computed_states": true,
+      "revision_read_gate": false
+    },
+    "D": {
+      "prior_original_reads": true,
+      "computed_states": true,
+      "revision_read_gate": true
+    }
+  },
+  "cells": [
+    {
+      "arm": "A",
+      "seed": 43,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 3,
+        "workflow_completed": true,
+        "judgments_correct": 10,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 0,
+        "unsupported_verified_promotions": 2,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": false,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 8,
+            "remaining_actions": 2,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 6,
+            "remaining_actions": 6,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 1
+          },
+          "c": {
+            "started": true,
+            "completed": true,
+            "actions": 13,
+            "remaining_actions": 1,
+            "tool_errors": 5,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 1
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 5,
+      "cost": {
+        "model_request_attempts": 27,
+        "returned_responses": 27,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 57411,
+          "completion_tokens": 1784,
+          "total_tokens": 59195
+        },
+        "model_request_wall_seconds": 67.844,
+        "runner_wall_seconds": 69.654,
+        "native_cli_calls": 59,
+        "native_cli_wall_seconds": 0.483,
+        "database_bytes": 1196032
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 1,
+        "budget_exhausted_phases": 0,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "B",
+      "seed": 43,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 3,
+        "workflow_completed": true,
+        "judgments_correct": 11,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 0,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": false,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 8,
+            "remaining_actions": 2,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 10,
+            "remaining_actions": 2,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": true,
+            "actions": 13,
+            "remaining_actions": 1,
+            "tool_errors": 4,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 2,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 6,
+      "cost": {
+        "model_request_attempts": 31,
+        "returned_responses": 31,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 75536,
+          "completion_tokens": 2120,
+          "total_tokens": 77656
+        },
+        "model_request_wall_seconds": 87.699,
+        "runner_wall_seconds": 89.627,
+        "native_cli_calls": 68,
+        "native_cli_wall_seconds": 0.651,
+        "database_bytes": 1187840
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 0,
+        "budget_exhausted_phases": 0,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "C",
+      "seed": 43,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 3,
+        "workflow_completed": true,
+        "judgments_correct": 15,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 0,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": true,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 8,
+            "remaining_actions": 2,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 9,
+            "remaining_actions": 3,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": true,
+            "actions": 11,
+            "remaining_actions": 3,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 9,
+      "cost": {
+        "model_request_attempts": 28,
+        "returned_responses": 28,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 125337,
+          "completion_tokens": 2122,
+          "total_tokens": 127459
+        },
+        "model_request_wall_seconds": 143.323,
+        "runner_wall_seconds": 145.131,
+        "native_cli_calls": 66,
+        "native_cli_wall_seconds": 0.612,
+        "database_bytes": 1187840
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 1,
+        "budget_exhausted_phases": 0,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "D",
+      "seed": 43,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 3,
+        "workflow_completed": true,
+        "judgments_correct": 15,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 0,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": true,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 9,
+            "remaining_actions": 1,
+            "tool_errors": 2,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 11,
+            "remaining_actions": 1,
+            "tool_errors": 3,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 3,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": true,
+            "actions": 12,
+            "remaining_actions": 2,
+            "tool_errors": 3,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 3,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 9,
+      "cost": {
+        "model_request_attempts": 32,
+        "returned_responses": 32,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 150768,
+          "completion_tokens": 2553,
+          "total_tokens": 153321
+        },
+        "model_request_wall_seconds": 178.344,
+        "runner_wall_seconds": 180.253,
+        "native_cli_calls": 64,
+        "native_cli_wall_seconds": 0.637,
+        "database_bytes": 1183744
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 0,
+        "budget_exhausted_phases": 0,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "D",
+      "seed": 44,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 2,
+        "workflow_completed": false,
+        "judgments_correct": 8,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 7,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": false,
+        "all_required_judgments_correct": false,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 9,
+            "remaining_actions": 1,
+            "tool_errors": 2,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 10,
+            "remaining_actions": 2,
+            "tool_errors": 2,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": false,
+            "actions": 14,
+            "remaining_actions": 0,
+            "tool_errors": 9,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 2,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 6,
+      "cost": {
+        "model_request_attempts": 33,
+        "returned_responses": 33,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 147665,
+          "completion_tokens": 2349,
+          "total_tokens": 150014
+        },
+        "model_request_wall_seconds": 163.715,
+        "runner_wall_seconds": 165.449,
+        "native_cli_calls": 52,
+        "native_cli_wall_seconds": 0.51,
+        "database_bytes": 1114112
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 2,
+        "budget_exhausted_phases": 1,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "C",
+      "seed": 44,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 3,
+        "workflow_completed": true,
+        "judgments_correct": 15,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 0,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": true,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 9,
+            "remaining_actions": 1,
+            "tool_errors": 2,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 7,
+            "remaining_actions": 5,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 2,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": true,
+            "actions": 11,
+            "remaining_actions": 3,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 9,
+      "cost": {
+        "model_request_attempts": 27,
+        "returned_responses": 27,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 113861,
+          "completion_tokens": 1998,
+          "total_tokens": 115859
+        },
+        "model_request_wall_seconds": 121.157,
+        "runner_wall_seconds": 122.639,
+        "native_cli_calls": 62,
+        "native_cli_wall_seconds": 0.534,
+        "database_bytes": 1187840
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 0,
+        "budget_exhausted_phases": 0,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "B",
+      "seed": 44,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 2,
+        "workflow_completed": false,
+        "judgments_correct": 7,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 7,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": true,
+        "all_required_judgments_correct": false,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 8,
+            "remaining_actions": 2,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 9,
+            "remaining_actions": 3,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 4,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 0
+          },
+          "c": {
+            "started": true,
+            "completed": false,
+            "actions": 14,
+            "remaining_actions": 0,
+            "tool_errors": 4,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 3,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 5,
+      "cost": {
+        "model_request_attempts": 31,
+        "returned_responses": 31,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 77285,
+          "completion_tokens": 1854,
+          "total_tokens": 79139
+        },
+        "model_request_wall_seconds": 81.668,
+        "runner_wall_seconds": 83.09,
+        "native_cli_calls": 68,
+        "native_cli_wall_seconds": 0.514,
+        "database_bytes": 1126400
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 1,
+        "budget_exhausted_phases": 1,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    },
+    {
+      "arm": "A",
+      "seed": 44,
+      "reported": true,
+      "audit_passed": true,
+      "outcomes": {
+        "completed_sessions": 2,
+        "workflow_completed": false,
+        "judgments_correct": 6,
+        "judgments_required": 15,
+        "missing_judgments_or_claims": 7,
+        "unsupported_verified_promotions": 0,
+        "independent_false_invalidations": 0,
+        "final_evidence_task_complete": false,
+        "all_required_judgments_correct": false,
+        "phases": {
+          "a": {
+            "started": true,
+            "completed": true,
+            "actions": 10,
+            "remaining_actions": 0,
+            "tool_errors": 3,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          },
+          "b": {
+            "started": true,
+            "completed": true,
+            "actions": 6,
+            "remaining_actions": 6,
+            "tool_errors": 1,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 0,
+            "source_permission_refusals": 0,
+            "format_refusals": 0,
+            "history_unavailable_refusals": 1
+          },
+          "c": {
+            "started": true,
+            "completed": false,
+            "actions": 14,
+            "remaining_actions": 0,
+            "tool_errors": 2,
+            "fatal_backend_errors": 0,
+            "model_failures": 0,
+            "proactive_reads": 0,
+            "reads_after_refusal": 0,
+            "citation_refusals": 1,
+            "source_permission_refusals": 0,
+            "format_refusals": 1,
+            "history_unavailable_refusals": 0
+          }
+        }
+      },
+      "legacy_score_descriptive_only": 1,
+      "cost": {
+        "model_request_attempts": 30,
+        "returned_responses": 30,
+        "requests_without_complete_returned_usage": 0,
+        "returned_usage": {
+          "prompt_tokens": 71212,
+          "completion_tokens": 2100,
+          "total_tokens": 73312
+        },
+        "model_request_wall_seconds": 80.389,
+        "runner_wall_seconds": 81.856,
+        "native_cli_calls": 73,
+        "native_cli_wall_seconds": 0.532,
+        "database_bytes": 1163264
+      },
+      "diagnostics": {
+        "rejected_assessment_shapes": 0,
+        "structured_format_refusals": 2,
+        "budget_exhausted_phases": 1,
+        "phases_not_started": 0
+      },
+      "audit_checks": {
+        "treatment_identity": true,
+        "binary_identity": true,
+        "source_archive_identity": true,
+        "public_projection_exact": true,
+        "requests_contain_only_public_history": true,
+        "request_attempts_accounted": true,
+        "feedback_and_sampling_fixed": true,
+        "original_responses_preserved": true,
+        "no_oracle_in_requests": true,
+        "final_oracle_matches_records": true,
+        "read_capability_enforced": true,
+        "gate_enforced_only_in_D": true,
+        "handoff_summaries_model_authored": true,
+        "scorer_unchanged": true,
+        "private_native_integrity": true,
+        "outcome_metrics_recompute": true,
+        "descriptive_legacy_score_recomputes": true
+      },
+      "native_audit_checks": {
+        "native_observations_bound_to_cli_receipts": true,
+        "native_observations_match_independent_oracle": true,
+        "native_versions_durable": true,
+        "native_export_restore_durable": true,
+        "native_receipts_replay_from_empty_database": true,
+        "native_binary_matches_manifest": true,
+        "native_receipt_sequence_valid": true
+      }
+    }
+  ],
+  "all_cells_reported_and_audited": true,
+  "limitations": [
+    "Two development seeds on one known task; no held-out or superiority conclusion.",
+    "All arms share private native storage and scientific checks; effects concern public memory and admission policy.",
+    "Legacy ten-condition totals include structurally unavailable read criteria for A and cannot rank arms.",
+    "Missing judgments are missing work, not zero-error success. Incomplete elapsed times are not speedups.",
+    "Public aggregates support review but do not replace local raw evidence for independent reproduction.",
+    "Runner elapsed excludes shared startup, hashing and post-run audit; returned tokens are server usage."
+  ]
+}

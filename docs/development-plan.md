@@ -2,7 +2,7 @@
 
 **English** · [简体中文](development-plan.zh-CN.md)
 
-Step 1 is implemented; deterministic checks and a real Qwen run are recorded in [step 1 acceptance](native-runtime-step1.md). Later steps remain planned.
+Steps 1 and 2 are implemented. See [step 1 acceptance](native-runtime-step1.md) and the [step 2 development-pilot report](step2-report.md). Held-out evaluation and later integrations remain planned.
 
 ## Research question and ownership
 
@@ -81,3 +81,9 @@ remain in ignored local run directories. Core and research results are reported
 separately. Each delivery records completed checks, failures and remaining work.
 
 Step 1 now has repeatable process acceptance and 43/44 model regressions; see the [maturity report](step1-maturity.md). It remains a research prototype.
+
+Step 2 now has an audited four-arm pipeline, 83 passing research tests and two
+separately reported eight-cell development batches. The first batch exposes a
+common JSON-schema defect; its failures are retained. The repaired batch is
+still known-task development evidence, not held-out effectiveness. See the
+[protocol amendment](step2-protocol-amendment.md) and [report](step2-report.md).
