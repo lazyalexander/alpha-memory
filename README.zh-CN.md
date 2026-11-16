@@ -4,7 +4,7 @@
 
 alpha-memory 是用 Rust 编写的记忆引擎，用于记录会话事件、保存任务检查点、检索原始证据，以及恢复工作所需的上下文。调用方通过命令行传入工作区和会话 ID。宿主插件和模型实验在各自的仓库维护。
 
-基于 alpha-memory 的跨会话研究流程，是对论文 *A Proof of the Most Informative Boolean Function Conjecture* 中验证方法的一项实验性实践。论文把计算结果限定在明确的适用范围内，并说明了一个反例如何推翻某个推广命题，而原猜想仍有成立的可能。我们把这一区分用于记忆交接：接手的会话可以沿结论找到原始证据，判断哪些依赖结论已失去依据，并保留经过独立验证的结果。[论文原文（arXiv:2609.24931）](https://arxiv.org/abs/2609.24931)
+跨会话研究流程借鉴论文 *A Proof of the Most Informative Boolean Function Conjecture* 的验证方法。作者主张给出计算机辅助证明；研究过程中的反例针对一个更强推广。我们将有明确范围的证据和依赖追踪用于记忆交接，这属于工程假设，并非该数学定理已经证明的效果。[论文 v2](https://arxiv.org/abs/2609.24931v2) · [采纳理由、落地方式与预期效果](docs/paper-rationale.zh-CN.md)
 
 ## 调用方与模型
 

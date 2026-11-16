@@ -4,7 +4,7 @@
 
 A Rust memory engine for session logs, task checkpoints, evidence retrieval and recall. Callers pass a workspace and session ID through the CLI. Host plugins and model-driven experiments live in separate repositories.
 
-The cross-session research workflow built on alpha-memory is an experimental application of the verification methods described in *A Proof of the Most Informative Boolean Function Conjecture*. The paper’s authors tie computational results to explicit domains and explain how a counterexample challenged a proposed generalization while leaving the principal conjecture open. Our experiment applies that distinction to memory handoffs: the next session can trace a claim to its evidence, identify which dependent conclusions lose support, and retain independently verified results. [Paper on arXiv, 2609.24931](https://arxiv.org/abs/2609.24931)
+The cross-session research workflow is inspired by the verification methods in *A Proof of the Most Informative Boolean Function Conjecture*. Its authors claim a computer-assisted proof; a counterexample discussed in its research history concerns a stronger generalization. We apply scope-aware evidence and dependency tracking to memory handoffs as an engineering hypothesis, rather than a result established by that theorem. [Paper v2](https://arxiv.org/abs/2609.24931v2) · [Adoption rationale, implementation and expected effects](docs/paper-rationale.md)
 
 ## Caller and model
 
